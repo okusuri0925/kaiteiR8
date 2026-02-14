@@ -1,0 +1,2681 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>診療報酬改定ナビゲーター - 令和8年度</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0066CC;
+            --primary-dark: #004C99;
+            --secondary: #00A3BF;
+            --accent: #FF6B35;
+            --bg-main: #F8FAFB;
+            --bg-card: #FFFFFF;
+            --text-primary: #1A2332;
+            --text-secondary: #5A6C7D;
+            --border: #E1E8ED;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr 420px;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="30" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="15" r="1" fill="white" opacity="0.1"/><circle cx="70" cy="30" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="20" r="1" fill="white" opacity="0.1"/></svg>');
+            background-size: 100px 100px;
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .header-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .filter-section {
+            margin-bottom: 2rem;
+        }
+
+        .filter-section h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            background: rgba(0,102,204,0.05);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-count {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--primary);
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin-top: 0.5rem;
+        }
+
+        .items-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .section-title-info {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .item-card {
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .item-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+            transform: translateX(4px);
+        }
+
+        .item-card.selected {
+            border-color: var(--primary);
+            background: rgba(0,102,204,0.03);
+            border-left: 4px solid var(--primary);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .item-category {
+            display: inline-block;
+            padding: 0.3rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+        }
+
+        .category-medical { background: #E3F2FD; color: #1565C0; }
+        .category-dental { background: #F3E5F5; color: #6A1B9A; }
+        .category-pharmacy { background: #E8F5E9; color: #2E7D32; }
+        .category-nursing { background: #FFF3E0; color: #E65100; }
+
+        .item-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+
+        .item-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .type-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .type-new { background: #E8F5E9; color: #2E7D32; }
+        .type-revised { background: #E3F2FD; color: #1565C0; }
+        .type-deleted { background: #FFEBEE; color: #C62828; }
+
+        /* PDF Panel */
+        .pdf-panel {
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pdf-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: white;
+        }
+
+        .pdf-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pdf-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .pdf-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .pdf-btn:hover {
+            background: var(--bg-main);
+            border-color: var(--primary);
+        }
+
+        .pdf-viewer {
+            flex: 1;
+            background: #F5F5F5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: auto;
+        }
+
+        .pdf-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem;
+        }
+
+        .pdf-placeholder svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .item-card {
+            animation: slideIn 0.3s ease-out backwards;
+        }
+
+        .item-card:nth-child(1) { animation-delay: 0.05s; }
+        .item-card:nth-child(2) { animation-delay: 0.1s; }
+        .item-card:nth-child(3) { animation-delay: 0.15s; }
+        .item-card:nth-child(4) { animation-delay: 0.2s; }
+        .item-card:nth-child(5) { animation-delay: 0.25s; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 250px 1fr;
+            }
+            .pdf-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>📋 診療報酬改定ナビゲーター</h1>
+                <div class="header-meta">
+                    <div class="header-badge">令和8年度改定</div>
+                    <div>総831ページ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="filter-section">
+                <h3>検索</h3>
+                <input type="text" class="search-box" id="searchBox" placeholder="項目名で検索...">
+            </div>
+
+            <div class="filter-section">
+                <h3>領域</h3>
+                <div class="filter-group" id="categoryFilter">
+                    <button class="filter-btn active" data-category="all">
+                        <span>すべて</span>
+                        <span class="filter-count" id="count-all">-</span>
+                    </button>
+                    <button class="filter-btn" data-category="medical">
+                        <span>医科</span>
+                        <span class="filter-count" id="count-medical">-</span>
+                    </button>
+                    <button class="filter-btn" data-category="dental">
+                        <span>歯科</span>
+                        <span class="filter-count" id="count-dental">-</span>
+                    </button>
+                    <button class="filter-btn" data-category="pharmacy">
+                        <span>調剤</span>
+                        <span class="filter-count" id="count-pharmacy">-</span>
+                    </button>
+                    <button class="filter-btn" data-category="nursing">
+                        <span>訪問看護</span>
+                        <span class="filter-count" id="count-nursing">-</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>改定区分</h3>
+                <div class="filter-group" id="typeFilter">
+                    <button class="filter-btn" data-type="new">
+                        <span>新設</span>
+                        <span class="filter-count" id="count-new">-</span>
+                    </button>
+                    <button class="filter-btn" data-type="revised">
+                        <span>改定</span>
+                        <span class="filter-count" id="count-revised">-</span>
+                    </button>
+                    <button class="filter-btn" data-type="deleted">
+                        <span>削除</span>
+                        <span class="filter-count" id="count-deleted">-</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="stats-grid" id="statsGrid">
+                <div class="loading">データを読み込んでいます...</div>
+            </div>
+
+            <div class="items-section">
+                <div class="section-header">
+                    <div>
+                        <h2>改定項目一覧</h2>
+                        <div class="section-title-info" id="itemsInfo">-</div>
+                    </div>
+                </div>
+
+                <div class="items-list" id="itemsList">
+                    <div class="loading">データを読み込んでいます...</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- PDF Panel -->
+        <aside class="pdf-panel">
+            <div class="pdf-header">
+                <h3>PDF参照</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                    項目をクリックして詳細を表示
+                </p>
+                <div class="pdf-controls">
+                    <button class="pdf-btn" id="openNewTab">新しいタブで開く</button>
+                </div>
+            </div>
+            <div class="pdf-viewer" id="pdfViewer">
+                <div class="pdf-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <p>項目を選択すると<br>該当ページが表示されます</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // 実際のPDFデータ（JSONから読み込んだデータを埋め込み）
+        const REVISION_ITEMS_DATA = [
+  {
+    "section": "Ⅰ",
+    "title": "物件費の高騰を踏まえた対応",
+    "page": 14,
+    "document_page": 2,
+    "category": "medical",
+    "type": "revised",
+    "id": 1
+  },
+  {
+    "section": "Ⅰ",
+    "title": "入院時の食費及び光熱水費の基準の見直し",
+    "page": 26,
+    "document_page": 14,
+    "category": "medical",
+    "type": "revised",
+    "id": 2
+  },
+  {
+    "section": "Ⅰ",
+    "title": "入院時の食事療養に係る見直し",
+    "page": 28,
+    "document_page": 16,
+    "category": "medical",
+    "type": "revised",
+    "id": 3
+  },
+  {
+    "section": "Ⅰ",
+    "title": "Ⅰ－２－１ 医療従事者の処遇改善",
+    "page": 30,
+    "document_page": 18,
+    "category": "section_major",
+    "type": "section",
+    "id": 4
+  },
+  {
+    "section": "Ⅰ",
+    "title": "賃上げに向けた評価の見直し",
+    "page": 30,
+    "document_page": 18,
+    "category": "medical",
+    "type": "revised",
+    "id": 5
+  },
+  {
+    "section": "Ⅰ",
+    "title": "夜勤を含む負担の軽減及び処遇改善に資する計画の明確化",
+    "page": 56,
+    "document_page": 44,
+    "category": "medical",
+    "type": "revised",
+    "id": 6
+  },
+  {
+    "section": "Ⅰ",
+    "title": "Ⅰ－２－２ 業務の効率化に資する ICT、AI、IoT 等の利活用の推進",
+    "page": 58,
+    "document_page": 46,
+    "category": "section_major",
+    "type": "section",
+    "id": 7
+  },
+  {
+    "section": "Ⅰ",
+    "title": "ICT 等の活用による看護業務効率化の推進",
+    "page": 58,
+    "document_page": 46,
+    "category": "medical",
+    "type": "revised",
+    "id": 8
+  },
+  {
+    "section": "Ⅰ",
+    "title": "医師事務作業補助体制加算の見直し",
+    "page": 64,
+    "document_page": 52,
+    "category": "medical",
+    "type": "revised",
+    "id": 9
+  },
+  {
+    "section": "Ⅰ",
+    "title": "医療機関等における事務等の簡素化・効率化",
+    "page": 70,
+    "document_page": 58,
+    "category": "medical",
+    "type": "revised",
+    "id": 10
+  },
+  {
+    "section": "Ⅰ",
+    "title": "様式９の見直し",
+    "page": 75,
+    "document_page": 63,
+    "category": "medical",
+    "type": "revised",
+    "id": 11
+  },
+  {
+    "section": "Ⅰ",
+    "title": "Ⅰ－２－４ 医師の働き方改革の推進／診療科偏在対策",
+    "page": 79,
+    "document_page": 67,
+    "category": "section_major",
+    "type": "section",
+    "id": 12
+  },
+  {
+    "section": "Ⅰ",
+    "title": "医師の働き方改革及び診療科偏在対策の推進",
+    "page": 79,
+    "document_page": 67,
+    "category": "medical",
+    "type": "revised",
+    "id": 13
+  },
+  {
+    "section": "Ⅰ",
+    "title": "処置及び手術の休日・時間外・深夜加算１の見直し",
+    "page": 88,
+    "document_page": 76,
+    "category": "medical",
+    "type": "revised",
+    "id": 14
+  },
+  {
+    "section": "Ⅰ",
+    "title": "Ⅰ－２－５ 診療報酬上求める基準の柔軟化",
+    "page": 91,
+    "document_page": 79,
+    "category": "section_major",
+    "type": "section",
+    "id": 15
+  },
+  {
+    "section": "Ⅰ",
+    "title": "感染対策向上加算等における専従要件の見直し",
+    "page": 94,
+    "document_page": 82,
+    "category": "medical",
+    "type": "revised",
+    "id": 16
+  },
+  {
+    "section": "Ⅰ",
+    "title": "常勤職員の常勤要件に係る勤務時間数の見直し",
+    "page": 100,
+    "document_page": 88,
+    "category": "medical",
+    "type": "revised",
+    "id": 17
+  },
+  {
+    "section": "Ⅰ",
+    "title": "質の高い摂食嚥下機能回復に係る取組の推進",
+    "page": 104,
+    "document_page": 92,
+    "category": "medical",
+    "type": "revised",
+    "id": 18
+  },
+  {
+    "section": "Ⅱ",
+    "title": "急性期病院一般入院基本料等の新設",
+    "page": 117,
+    "document_page": 105,
+    "category": "medical",
+    "type": "new",
+    "id": 19
+  },
+  {
+    "section": "Ⅱ",
+    "title": "重症度、医療・看護必要度の見直し",
+    "page": 133,
+    "document_page": 121,
+    "category": "medical",
+    "type": "revised",
+    "id": 20
+  },
+  {
+    "section": "Ⅱ",
+    "title": "急性期総合体制加算の新設",
+    "page": 141,
+    "document_page": 129,
+    "category": "medical",
+    "type": "new",
+    "id": 21
+  },
+  {
+    "section": "Ⅱ",
+    "title": "特定機能病院入院基本料の見直し",
+    "page": 150,
+    "document_page": 138,
+    "category": "medical",
+    "type": "revised",
+    "id": 22
+  },
+  {
+    "section": "Ⅱ",
+    "title": "特定集中治療室管理料の見直し",
+    "page": 156,
+    "document_page": 144,
+    "category": "medical",
+    "type": "revised",
+    "id": 23
+  },
+  {
+    "section": "Ⅱ",
+    "title": "ハイケアユニット入院医療管理料の見直し",
+    "page": 168,
+    "document_page": 156,
+    "category": "medical",
+    "type": "revised",
+    "id": 24
+  },
+  {
+    "section": "Ⅱ",
+    "title": "救命救急入院料の見直し",
+    "page": 173,
+    "document_page": 161,
+    "category": "medical",
+    "type": "revised",
+    "id": 25
+  },
+  {
+    "section": "Ⅱ",
+    "title": "脳卒中ケアユニット入院医療管理料の見直し",
+    "page": 183,
+    "document_page": 171,
+    "category": "medical",
+    "type": "revised",
+    "id": 26
+  },
+  {
+    "section": "Ⅱ",
+    "title": "地域包括医療病棟の見直し",
+    "page": 185,
+    "document_page": 173,
+    "category": "medical",
+    "type": "revised",
+    "id": 27
+  },
+  {
+    "section": "Ⅱ",
+    "title": "療養病棟入院基本料の見直し",
+    "page": 199,
+    "document_page": 187,
+    "category": "medical",
+    "type": "revised",
+    "id": 28
+  },
+  {
+    "section": "Ⅱ",
+    "title": "障害者施設等入院基本料等の見直し",
+    "page": 206,
+    "document_page": 194,
+    "category": "medical",
+    "type": "revised",
+    "id": 29
+  },
+  {
+    "section": "Ⅱ",
+    "title": "入院料に包括されない 除外薬剤・注射薬の範囲の見直し",
+    "page": 209,
+    "document_page": 197,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 30
+  },
+  {
+    "section": "Ⅱ",
+    "title": "DPC／PDPS の見直し",
+    "page": 218,
+    "document_page": 206,
+    "category": "medical",
+    "type": "revised",
+    "id": 31
+  },
+  {
+    "section": "Ⅱ",
+    "title": "短期滞在手術等基本料の見直し",
+    "page": 228,
+    "document_page": 216,
+    "category": "medical",
+    "type": "revised",
+    "id": 32
+  },
+  {
+    "section": "Ⅱ",
+    "title": "地域加算の見直し",
+    "page": 242,
+    "document_page": 230,
+    "category": "medical",
+    "type": "revised",
+    "id": 33
+  },
+  {
+    "section": "Ⅱ",
+    "title": "看護補助者に係る加算の名称の見直し",
+    "page": 243,
+    "document_page": 231,
+    "category": "medical",
+    "type": "revised",
+    "id": 34
+  },
+  {
+    "section": "Ⅱ",
+    "title": "Ⅱ－１－２ 人口の少ない地域の実情を踏まえた評価",
+    "page": 244,
+    "document_page": 232,
+    "category": "section_major",
+    "type": "section",
+    "id": 35
+  },
+  {
+    "section": "Ⅱ",
+    "title": "医療資源の少ない地域の対象地域の見直し",
+    "page": 244,
+    "document_page": 232,
+    "category": "medical",
+    "type": "revised",
+    "id": 36
+  },
+  {
+    "section": "",
+    "title": "歯科巡回診療に係る適切な推進",
+    "page": 256,
+    "document_page": 244,
+    "category": "dental",
+    "type": "revised",
+    "id": 37
+  },
+  {
+    "section": "Ⅱ",
+    "title": "包括期入院医療における充実した後方支援の評価",
+    "page": 262,
+    "document_page": 250,
+    "category": "medical",
+    "type": "revised",
+    "id": 38
+  },
+  {
+    "section": "Ⅱ",
+    "title": "地域包括ケア病棟における初期加算等の評価の見直し",
+    "page": 264,
+    "document_page": 252,
+    "category": "medical",
+    "type": "revised",
+    "id": 39
+  },
+  {
+    "section": "Ⅱ",
+    "title": "Ⅱ－２－２ 円滑な入退院の実現",
+    "page": 267,
+    "document_page": 255,
+    "category": "section_major",
+    "type": "section",
+    "id": 40
+  },
+  {
+    "section": "Ⅱ",
+    "title": "入退院支援加算等の見直し",
+    "page": 267,
+    "document_page": 255,
+    "category": "medical",
+    "type": "revised",
+    "id": 41
+  },
+  {
+    "section": "Ⅱ",
+    "title": "介護支援等連携指導料の見直し",
+    "page": 274,
+    "document_page": 262,
+    "category": "medical",
+    "type": "revised",
+    "id": 42
+  },
+  {
+    "section": "Ⅱ",
+    "title": "感染対策向上加算等における専従要件の見直し",
+    "page": 279,
+    "document_page": 267,
+    "category": "medical",
+    "type": "revised",
+    "id": 43
+  },
+  {
+    "section": "Ⅱ",
+    "title": "質の高い摂食嚥下機能回復に係る取組の推進",
+    "page": 290,
+    "document_page": 278,
+    "category": "medical",
+    "type": "revised",
+    "id": 44
+  },
+  {
+    "section": "Ⅱ",
+    "title": "入院患者の口腔管理における医科歯科連携の推進",
+    "page": 293,
+    "document_page": 281,
+    "category": "dental",
+    "type": "revised",
+    "id": 45
+  },
+  {
+    "section": "Ⅱ",
+    "title": "機能強化加算の見直し",
+    "page": 295,
+    "document_page": 283,
+    "category": "medical",
+    "type": "revised",
+    "id": 46
+  },
+  {
+    "section": "Ⅱ",
+    "title": "生活習慣病管理料（Ⅰ）及び（Ⅱ）の見直し",
+    "page": 298,
+    "document_page": 286,
+    "category": "medical",
+    "type": "revised",
+    "id": 47
+  },
+  {
+    "section": "Ⅱ",
+    "title": "特定疾患療養管理料の見直し",
+    "page": 303,
+    "document_page": 291,
+    "category": "medical",
+    "type": "revised",
+    "id": 48
+  },
+  {
+    "section": "Ⅱ",
+    "title": "地域包括診療加算等の見直し",
+    "page": 305,
+    "document_page": 293,
+    "category": "medical",
+    "type": "revised",
+    "id": 49
+  },
+  {
+    "section": "Ⅱ",
+    "title": "時間外対応体制加算の充実",
+    "page": 318,
+    "document_page": 306,
+    "category": "medical",
+    "type": "revised",
+    "id": 50
+  },
+  {
+    "section": "",
+    "title": "継続的・効果的な歯周病治療の推進",
+    "page": 323,
+    "document_page": 311,
+    "category": "medical",
+    "type": "revised",
+    "id": 51
+  },
+  {
+    "section": "",
+    "title": "かかりつけ薬剤師の推進",
+    "page": 326,
+    "document_page": 314,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 52
+  },
+  {
+    "section": "Ⅱ",
+    "title": "連携強化診療情報提供料の見直し",
+    "page": 341,
+    "document_page": 329,
+    "category": "medical",
+    "type": "revised",
+    "id": 53
+  },
+  {
+    "section": "Ⅱ",
+    "title": "Ⅱ－５ 質の高い在宅医療・訪問看護の確保",
+    "page": 349,
+    "document_page": 337,
+    "category": "section_major",
+    "type": "section",
+    "id": 54
+  },
+  {
+    "section": "Ⅱ",
+    "title": "適正な訪問看護の推進",
+    "page": 349,
+    "document_page": 337,
+    "category": "nursing",
+    "type": "revised",
+    "id": 55
+  },
+  {
+    "section": "Ⅱ",
+    "title": "指定訪問看護の事業の人員及び運営に関する基準の見直し",
+    "page": 352,
+    "document_page": 340,
+    "category": "nursing",
+    "type": "revised",
+    "id": 56
+  },
+  {
+    "section": "Ⅱ",
+    "title": "保険医療機関及び保険医療養担当規則の見直し",
+    "page": 356,
+    "document_page": 344,
+    "category": "medical",
+    "type": "revised",
+    "id": 57
+  },
+  {
+    "section": "Ⅱ",
+    "title": "在宅緩和ケア充実診療所・病院加算の見直し",
+    "page": 359,
+    "document_page": 347,
+    "category": "medical",
+    "type": "revised",
+    "id": 58
+  },
+  {
+    "section": "Ⅱ",
+    "title": "往診時医療情報連携加算の見直し",
+    "page": 363,
+    "document_page": 351,
+    "category": "medical",
+    "type": "revised",
+    "id": 59
+  },
+  {
+    "section": "Ⅱ",
+    "title": "退院直後の 訪問栄養食事指導に関する評価の新設",
+    "page": 365,
+    "document_page": 353,
+    "category": "medical",
+    "type": "new",
+    "id": 60
+  },
+  {
+    "section": "Ⅱ",
+    "title": "連携型機能強化型在宅療養支援診療所の見直し",
+    "page": 367,
+    "document_page": 355,
+    "category": "medical",
+    "type": "revised",
+    "id": 61
+  },
+  {
+    "section": "Ⅱ",
+    "title": "在宅療養支援診療所・病院の見直し",
+    "page": 373,
+    "document_page": 361,
+    "category": "medical",
+    "type": "revised",
+    "id": 62
+  },
+  {
+    "section": "Ⅱ",
+    "title": "在宅時医学総合管理料等及び在宅療養支援診療所等の見直し",
+    "page": 374,
+    "document_page": 362,
+    "category": "medical",
+    "type": "revised",
+    "id": 63
+  },
+  {
+    "section": "Ⅱ",
+    "title": "在宅療養指導管理材料加算の算定要件の見直し",
+    "page": 379,
+    "document_page": 367,
+    "category": "medical",
+    "type": "revised",
+    "id": 64
+  },
+  {
+    "section": "Ⅱ",
+    "title": "医師と薬剤師の同時訪問の推進",
+    "page": 381,
+    "document_page": 369,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 65
+  },
+  {
+    "section": "Ⅱ",
+    "title": "残薬対策に係る地域包括診療料等の見直し",
+    "page": 383,
+    "document_page": 371,
+    "category": "medical",
+    "type": "revised",
+    "id": 66
+  },
+  {
+    "section": "Ⅱ",
+    "title": "質の高い在宅歯科医療の提供の推進",
+    "page": 389,
+    "document_page": 377,
+    "category": "dental",
+    "type": "revised",
+    "id": 67
+  },
+  {
+    "section": "Ⅱ",
+    "title": "在宅薬学総合体制加算の見直し",
+    "page": 400,
+    "document_page": 388,
+    "category": "medical",
+    "type": "revised",
+    "id": 68
+  },
+  {
+    "section": "",
+    "title": "在宅患者訪問薬剤管理指導料の見直し",
+    "page": 406,
+    "document_page": 394,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 69
+  },
+  {
+    "section": "Ⅱ",
+    "title": "過疎地域等に配慮した評価の見直し",
+    "page": 409,
+    "document_page": 397,
+    "category": "medical",
+    "type": "revised",
+    "id": 70
+  },
+  {
+    "section": "Ⅱ",
+    "title": "訪問看護における ICT を用いた医療情報連携の推進",
+    "page": 412,
+    "document_page": 400,
+    "category": "nursing",
+    "type": "revised",
+    "id": 71
+  },
+  {
+    "section": "Ⅱ",
+    "title": "乳幼児加算の評価の見直し",
+    "page": 416,
+    "document_page": 404,
+    "category": "medical",
+    "type": "revised",
+    "id": 72
+  },
+  {
+    "section": "Ⅱ",
+    "title": "訪問看護管理療養費の見直し",
+    "page": 417,
+    "document_page": 405,
+    "category": "nursing",
+    "type": "revised",
+    "id": 73
+  },
+  {
+    "section": "Ⅱ",
+    "title": "同一建物に居住する利用者への訪問看護の評価の見直し",
+    "page": 420,
+    "document_page": 408,
+    "category": "nursing",
+    "type": "revised",
+    "id": 74
+  },
+  {
+    "section": "Ⅱ",
+    "title": "包括型訪問看護療養費の新設",
+    "page": 430,
+    "document_page": 418,
+    "category": "nursing",
+    "type": "new",
+    "id": 75
+  },
+  {
+    "section": "Ⅱ",
+    "title": "Ⅱ－６ 人口・医療資源の少ない地域への支援",
+    "page": 434,
+    "document_page": 422,
+    "category": "section_major",
+    "type": "section",
+    "id": 76
+  },
+  {
+    "section": "Ⅱ",
+    "title": "医療資源の少ない地域の対象地域の見直し",
+    "page": 434,
+    "document_page": 422,
+    "category": "medical",
+    "type": "revised",
+    "id": 77
+  },
+  {
+    "section": "Ⅱ",
+    "title": "歯科巡回診療に係る適切な推進",
+    "page": 437,
+    "document_page": 425,
+    "category": "dental",
+    "type": "revised",
+    "id": 78
+  },
+  {
+    "section": "Ⅱ",
+    "title": "Ⅱ－８ 医師の地域偏在対策の推進",
+    "page": 440,
+    "document_page": 428,
+    "category": "section_major",
+    "type": "section",
+    "id": 79
+  },
+  {
+    "section": "Ⅱ",
+    "title": "医療資源の少ない地域の対象地域の見直し",
+    "page": 440,
+    "document_page": 428,
+    "category": "medical",
+    "type": "revised",
+    "id": 80
+  },
+  {
+    "section": "",
+    "title": "外来医師過多区域に関する対応",
+    "page": 442,
+    "document_page": 430,
+    "category": "medical",
+    "type": "revised",
+    "id": 81
+  },
+  {
+    "section": "Ⅲ",
+    "title": "療養・就労両立支援指導料の見直し",
+    "page": 444,
+    "document_page": 432,
+    "category": "medical",
+    "type": "revised",
+    "id": 82
+  },
+  {
+    "section": "Ⅲ",
+    "title": "健康診断等の受診後における初再診料等の算定方法の明確化",
+    "page": 447,
+    "document_page": 435,
+    "category": "medical",
+    "type": "revised",
+    "id": 83
+  },
+  {
+    "section": "Ⅲ",
+    "title": "手術等の医療技術の適切な評価",
+    "page": 450,
+    "document_page": 438,
+    "category": "medical",
+    "type": "revised",
+    "id": 84
+  },
+  {
+    "section": "Ⅲ",
+    "title": "高度急性期病院におけるロボット手術の評価の新設",
+    "page": 454,
+    "document_page": 442,
+    "category": "medical",
+    "type": "new",
+    "id": 85
+  },
+  {
+    "section": "Ⅲ",
+    "title": "全身麻酔の評価の見直し",
+    "page": 456,
+    "document_page": 444,
+    "category": "medical",
+    "type": "revised",
+    "id": 86
+  },
+  {
+    "section": "Ⅲ",
+    "title": "遺伝性疾患に係る療養指導に対する評価の見直し",
+    "page": 460,
+    "document_page": 448,
+    "category": "medical",
+    "type": "revised",
+    "id": 87
+  },
+  {
+    "section": "Ⅲ",
+    "title": "遺伝学的検査の見直し",
+    "page": 465,
+    "document_page": 453,
+    "category": "medical",
+    "type": "revised",
+    "id": 88
+  },
+  {
+    "section": "Ⅲ",
+    "title": "迅速なフィブリノゲン測定に係る評価の新設",
+    "page": 471,
+    "document_page": 459,
+    "category": "medical",
+    "type": "new",
+    "id": 89
+  },
+  {
+    "section": "Ⅲ",
+    "title": "質の高い臨床検査の適切な評価",
+    "page": 472,
+    "document_page": 460,
+    "category": "medical",
+    "type": "revised",
+    "id": 90
+  },
+  {
+    "section": "Ⅲ",
+    "title": "骨塩定量検査の算定要件の見直し",
+    "page": 473,
+    "document_page": 461,
+    "category": "medical",
+    "type": "revised",
+    "id": 91
+  },
+  {
+    "section": "Ⅲ",
+    "title": "近視進行抑制薬の処方に係る検査の見直し",
+    "page": 475,
+    "document_page": 463,
+    "category": "medical",
+    "type": "revised",
+    "id": 92
+  },
+  {
+    "section": "Ⅲ",
+    "title": "検体検査管理加算の見直し",
+    "page": 476,
+    "document_page": 464,
+    "category": "medical",
+    "type": "revised",
+    "id": 93
+  },
+  {
+    "section": "Ⅲ",
+    "title": "カルタヘナ法に基づく医学管理の推進",
+    "page": 478,
+    "document_page": 466,
+    "category": "medical",
+    "type": "revised",
+    "id": 94
+  },
+  {
+    "section": "Ⅲ",
+    "title": "慢性心不全の再入院予防の評価の新設",
+    "page": 480,
+    "document_page": 468,
+    "category": "medical",
+    "type": "new",
+    "id": 95
+  },
+  {
+    "section": "Ⅲ",
+    "title": "人工腎臓の評価の見直し",
+    "page": 483,
+    "document_page": 471,
+    "category": "medical",
+    "type": "revised",
+    "id": 96
+  },
+  {
+    "section": "Ⅲ",
+    "title": "経皮的シャント拡張術・血栓除去術の適正化",
+    "page": 487,
+    "document_page": 475,
+    "category": "medical",
+    "type": "revised",
+    "id": 97
+  },
+  {
+    "section": "Ⅲ",
+    "title": "医療機関間連携による腹膜透析管理の推進",
+    "page": 489,
+    "document_page": 477,
+    "category": "medical",
+    "type": "revised",
+    "id": 98
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－１－１ 身体的拘束の最小化の推進",
+    "page": 491,
+    "document_page": 479,
+    "category": "section_major",
+    "type": "section",
+    "id": 99
+  },
+  {
+    "section": "Ⅲ",
+    "title": "身体的拘束最小化の取組の更なる推進",
+    "page": 491,
+    "document_page": 479,
+    "category": "medical",
+    "type": "revised",
+    "id": 100
+  },
+  {
+    "section": "Ⅲ",
+    "title": "認知症ケア加算の見直し",
+    "page": 499,
+    "document_page": 487,
+    "category": "medical",
+    "type": "revised",
+    "id": 101
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－１－２ 医療安全対策の推進",
+    "page": 500,
+    "document_page": 488,
+    "category": "section_major",
+    "type": "section",
+    "id": 102
+  },
+  {
+    "section": "Ⅲ",
+    "title": "医療安全対策加算の見直し",
+    "page": 500,
+    "document_page": 488,
+    "category": "medical",
+    "type": "revised",
+    "id": 103
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－２ アウトカムにも着目した評価の推進",
+    "page": 501,
+    "document_page": 489,
+    "category": "section_major",
+    "type": "section",
+    "id": 104
+  },
+  {
+    "section": "Ⅲ",
+    "title": "入院基本料等における各種基準の計算方法の明確化",
+    "page": 508,
+    "document_page": 496,
+    "category": "medical",
+    "type": "revised",
+    "id": 105
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－２－１ アウトカムにも着目した評価の推進",
+    "page": 513,
+    "document_page": 501,
+    "category": "section_major",
+    "type": "section",
+    "id": 106
+  },
+  {
+    "section": "Ⅲ",
+    "title": "データ提出加算の届出を要件とする入院料の見直し",
+    "page": 513,
+    "document_page": 501,
+    "category": "medical",
+    "type": "revised",
+    "id": 107
+  },
+  {
+    "section": "Ⅲ",
+    "title": "診療実績データの提出に係る評価の見直し",
+    "page": 516,
+    "document_page": 504,
+    "category": "medical",
+    "type": "revised",
+    "id": 108
+  },
+  {
+    "section": "Ⅲ",
+    "title": "医療 DX 推進体制整備加算等の見直し",
+    "page": 522,
+    "document_page": 510,
+    "category": "medical",
+    "type": "revised",
+    "id": 109
+  },
+  {
+    "section": "Ⅲ",
+    "title": "オンライン診療の適正な推進に係る評価の見直し",
+    "page": 533,
+    "document_page": 521,
+    "category": "medical",
+    "type": "revised",
+    "id": 110
+  },
+  {
+    "section": "Ⅲ",
+    "title": "オンライン診療における電子処方箋の活用の推進",
+    "page": 535,
+    "document_page": 523,
+    "category": "medical",
+    "type": "revised",
+    "id": 111
+  },
+  {
+    "section": "Ⅲ",
+    "title": "オンライン診療の適正な推進に係る評価の見直し",
+    "page": 537,
+    "document_page": 525,
+    "category": "medical",
+    "type": "revised",
+    "id": 112
+  },
+  {
+    "section": "Ⅲ",
+    "title": "D to P with N のオンライン診療の評価の明確化",
+    "page": 538,
+    "document_page": 526,
+    "category": "medical",
+    "type": "revised",
+    "id": 113
+  },
+  {
+    "section": "Ⅲ",
+    "title": "遠隔連携診療料の評価の拡大",
+    "page": 544,
+    "document_page": 532,
+    "category": "medical",
+    "type": "revised",
+    "id": 114
+  },
+  {
+    "section": "Ⅲ",
+    "title": "オンライン診療の適正な推進に係る評価の見直し",
+    "page": 551,
+    "document_page": 539,
+    "category": "medical",
+    "type": "revised",
+    "id": 115
+  },
+  {
+    "section": "Ⅲ",
+    "title": "オンライン診療における電子処方箋の活用の推進",
+    "page": 552,
+    "document_page": 540,
+    "category": "medical",
+    "type": "revised",
+    "id": 116
+  },
+  {
+    "section": "Ⅲ",
+    "title": "情報通信機器等を用いた外来栄養食事指導料の見直し",
+    "page": 553,
+    "document_page": 541,
+    "category": "medical",
+    "type": "revised",
+    "id": 117
+  },
+  {
+    "section": "Ⅲ",
+    "title": "情報通信機器を用いた医学管理等の評価の新設",
+    "page": 557,
+    "document_page": 545,
+    "category": "medical",
+    "type": "new",
+    "id": 118
+  },
+  {
+    "section": "Ⅲ",
+    "title": "情報通信機器を用いた療養指導の見直し",
+    "page": 559,
+    "document_page": 547,
+    "category": "medical",
+    "type": "revised",
+    "id": 119
+  },
+  {
+    "section": "Ⅲ",
+    "title": "情報通信機器を用いた医学管理等の評価の新設",
+    "page": 561,
+    "document_page": 549,
+    "category": "medical",
+    "type": "new",
+    "id": 120
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－４ 質の高いリハビリテーションの推進",
+    "page": 562,
+    "document_page": 550,
+    "category": "section_major",
+    "type": "section",
+    "id": 121
+  },
+  {
+    "section": "Ⅲ",
+    "title": "退院時リハビリテーション指導料の算定要件の見直し",
+    "page": 562,
+    "document_page": 550,
+    "category": "medical",
+    "type": "revised",
+    "id": 122
+  },
+  {
+    "section": "Ⅲ",
+    "title": "リハビリテーション総合実施計画評価料の見直し",
+    "page": 570,
+    "document_page": 558,
+    "category": "medical",
+    "type": "revised",
+    "id": 123
+  },
+  {
+    "section": "",
+    "title": "リンパ浮腫複合的治療料の評価の見直し",
+    "page": 572,
+    "document_page": 560,
+    "category": "medical",
+    "type": "revised",
+    "id": 124
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－４－１ 発症早期からのリハビリテーション介入の推進",
+    "page": 573,
+    "document_page": 561,
+    "category": "section_major",
+    "type": "section",
+    "id": 125
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－４－２ 土日祝日のリハビリテーション実施体制の充実",
+    "page": 576,
+    "document_page": 564,
+    "category": "section_major",
+    "type": "section",
+    "id": 126
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－５－１ 救急医療の充実",
+    "page": 577,
+    "document_page": 565,
+    "category": "section_major",
+    "type": "section",
+    "id": 127
+  },
+  {
+    "section": "Ⅲ",
+    "title": "救急外来医療に係る評価の再編",
+    "page": 577,
+    "document_page": 565,
+    "category": "medical",
+    "type": "revised",
+    "id": 128
+  },
+  {
+    "section": "Ⅲ",
+    "title": "救急患者連携搬送料の見直し",
+    "page": 595,
+    "document_page": 583,
+    "category": "medical",
+    "type": "revised",
+    "id": 129
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－５－２ 小児・周産期医療の充実",
+    "page": 599,
+    "document_page": 587,
+    "category": "section_major",
+    "type": "section",
+    "id": 130
+  },
+  {
+    "section": "Ⅲ",
+    "title": "母体・胎児集中治療室管理料の見直し",
+    "page": 599,
+    "document_page": 587,
+    "category": "medical",
+    "type": "revised",
+    "id": 131
+  },
+  {
+    "section": "Ⅲ",
+    "title": "新生児特定集中治療室管理料の見直し",
+    "page": 603,
+    "document_page": 591,
+    "category": "medical",
+    "type": "revised",
+    "id": 132
+  },
+  {
+    "section": "Ⅲ",
+    "title": "小児の成人移行期医療に係る受入の推進",
+    "page": 604,
+    "document_page": 592,
+    "category": "medical",
+    "type": "revised",
+    "id": 133
+  },
+  {
+    "section": "Ⅲ",
+    "title": "小児医療に係る高額な検査・薬剤への対応",
+    "page": 606,
+    "document_page": 594,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 134
+  },
+  {
+    "section": "Ⅲ",
+    "title": "産科管理加算の新設",
+    "page": 608,
+    "document_page": 596,
+    "category": "medical",
+    "type": "new",
+    "id": 135
+  },
+  {
+    "section": "Ⅲ",
+    "title": "療養病棟入院基本料の見直し",
+    "page": 609,
+    "document_page": 597,
+    "category": "medical",
+    "type": "revised",
+    "id": 136
+  },
+  {
+    "section": "Ⅲ",
+    "title": "無菌製剤処理加算の見直し",
+    "page": 610,
+    "document_page": 598,
+    "category": "medical",
+    "type": "revised",
+    "id": 137
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－５－３ 質の高いがん医療及び緩和ケアの評価",
+    "page": 611,
+    "document_page": 599,
+    "category": "section_major",
+    "type": "section",
+    "id": 138
+  },
+  {
+    "section": "Ⅲ",
+    "title": "外来腫瘍化学療法診療料の見直し",
+    "page": 611,
+    "document_page": 599,
+    "category": "medical",
+    "type": "revised",
+    "id": 139
+  },
+  {
+    "section": "Ⅲ",
+    "title": "人口減少地域におけるＩＭＲＴの施設基準の見直し",
+    "page": 618,
+    "document_page": 606,
+    "category": "medical",
+    "type": "revised",
+    "id": 140
+  },
+  {
+    "section": "Ⅲ",
+    "title": "がん患者指導管理料の見直し",
+    "page": 623,
+    "document_page": 611,
+    "category": "medical",
+    "type": "revised",
+    "id": 141
+  },
+  {
+    "section": "Ⅲ",
+    "title": "遺伝性乳癌卵巣癌症候群に係る評価の見直し",
+    "page": 625,
+    "document_page": 613,
+    "category": "medical",
+    "type": "revised",
+    "id": 142
+  },
+  {
+    "section": "Ⅲ",
+    "title": "閉鎖式接続器具を用いた抗がん剤投与時の評価の新設",
+    "page": 627,
+    "document_page": 615,
+    "category": "medical",
+    "type": "new",
+    "id": 143
+  },
+  {
+    "section": "Ⅲ",
+    "title": "非がん患者に対する緩和ケアの評価の見直し",
+    "page": 628,
+    "document_page": 616,
+    "category": "medical",
+    "type": "revised",
+    "id": 144
+  },
+  {
+    "section": "Ⅲ",
+    "title": "療養病棟入院基本料の見直し",
+    "page": 635,
+    "document_page": 623,
+    "category": "medical",
+    "type": "revised",
+    "id": 145
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－５－４ 質の高い精神医療の評価",
+    "page": 636,
+    "document_page": 624,
+    "category": "section_major",
+    "type": "section",
+    "id": 146
+  },
+  {
+    "section": "Ⅲ",
+    "title": "精神病床における多職種協働の推進",
+    "page": 636,
+    "document_page": 624,
+    "category": "medical",
+    "type": "revised",
+    "id": 147
+  },
+  {
+    "section": "",
+    "title": "精神科リエゾンチーム加算の見直し",
+    "page": 645,
+    "document_page": 633,
+    "category": "medical",
+    "type": "revised",
+    "id": 148
+  },
+  {
+    "section": "",
+    "title": "精神科慢性身体合併症管理加算の新設",
+    "page": 647,
+    "document_page": 635,
+    "category": "medical",
+    "type": "new",
+    "id": 149
+  },
+  {
+    "section": "",
+    "title": "精神疾患の特定入院料における包括範囲の見直し",
+    "page": 648,
+    "document_page": 636,
+    "category": "medical",
+    "type": "revised",
+    "id": 150
+  },
+  {
+    "section": "",
+    "title": "精神科救急医療体制加算の見直し",
+    "page": 650,
+    "document_page": 638,
+    "category": "medical",
+    "type": "revised",
+    "id": 151
+  },
+  {
+    "section": "",
+    "title": "精神科救急急性期医療入院料等の見直し",
+    "page": 654,
+    "document_page": 642,
+    "category": "medical",
+    "type": "revised",
+    "id": 152
+  },
+  {
+    "section": "",
+    "title": "精神病棟入院基本料の見直し",
+    "page": 657,
+    "document_page": 645,
+    "category": "medical",
+    "type": "revised",
+    "id": 153
+  },
+  {
+    "section": "",
+    "title": "精神科急性期医師配置加算の見直し",
+    "page": 658,
+    "document_page": 646,
+    "category": "medical",
+    "type": "revised",
+    "id": 154
+  },
+  {
+    "section": "",
+    "title": "通院・在宅精神療法の見直し",
+    "page": 661,
+    "document_page": 649,
+    "category": "medical",
+    "type": "revised",
+    "id": 155
+  },
+  {
+    "section": "",
+    "title": "精神保健福祉士の病棟の専従要件の見直し",
+    "page": 663,
+    "document_page": 651,
+    "category": "medical",
+    "type": "revised",
+    "id": 156
+  },
+  {
+    "section": "",
+    "title": "心理支援加算の見直し",
+    "page": 665,
+    "document_page": 653,
+    "category": "medical",
+    "type": "revised",
+    "id": 157
+  },
+  {
+    "section": "",
+    "title": "認知療法・認知行動療法の見直し",
+    "page": 667,
+    "document_page": 655,
+    "category": "medical",
+    "type": "revised",
+    "id": 158
+  },
+  {
+    "section": "",
+    "title": "臨床心理技術者に係る経過措置の見直し",
+    "page": 673,
+    "document_page": 661,
+    "category": "medical",
+    "type": "revised",
+    "id": 159
+  },
+  {
+    "section": "",
+    "title": "児童思春期支援指導加算の見直し",
+    "page": 675,
+    "document_page": 663,
+    "category": "medical",
+    "type": "revised",
+    "id": 160
+  },
+  {
+    "section": "",
+    "title": "早期診療体制充実加算の見直し",
+    "page": 679,
+    "document_page": 667,
+    "category": "medical",
+    "type": "revised",
+    "id": 161
+  },
+  {
+    "section": "",
+    "title": "情報通信機器を用いた精神療法の見直し",
+    "page": 681,
+    "document_page": 669,
+    "category": "medical",
+    "type": "revised",
+    "id": 162
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－５－５ 難病患者等に対する適切な医療の評価",
+    "page": 683,
+    "document_page": 671,
+    "category": "section_major",
+    "type": "section",
+    "id": 163
+  },
+  {
+    "section": "Ⅲ",
+    "title": "脳死臓器提供管理料の見直し",
+    "page": 683,
+    "document_page": 671,
+    "category": "medical",
+    "type": "revised",
+    "id": 164
+  },
+  {
+    "section": "Ⅲ",
+    "title": "臓器移植手術に係る評価の新設",
+    "page": 685,
+    "document_page": 673,
+    "category": "medical",
+    "type": "new",
+    "id": 165
+  },
+  {
+    "section": "Ⅲ",
+    "title": "臍帯血移植の見直し",
+    "page": 686,
+    "document_page": 674,
+    "category": "medical",
+    "type": "revised",
+    "id": 166
+  },
+  {
+    "section": "Ⅲ",
+    "title": "抗 HLA 抗体検査の算定要件の見直し",
+    "page": 687,
+    "document_page": 675,
+    "category": "medical",
+    "type": "revised",
+    "id": 167
+  },
+  {
+    "section": "Ⅲ",
+    "title": "Ⅲ－６ 感染症対策や薬剤耐性対策の推進",
+    "page": 688,
+    "document_page": 676,
+    "category": "section_major",
+    "type": "section",
+    "id": 168
+  },
+  {
+    "section": "Ⅲ",
+    "title": "感染症に係る検査の見直し",
+    "page": 688,
+    "document_page": 676,
+    "category": "medical",
+    "type": "revised",
+    "id": 169
+  },
+  {
+    "section": "Ⅲ",
+    "title": "感染対策向上加算の見直し",
+    "page": 692,
+    "document_page": 680,
+    "category": "medical",
+    "type": "revised",
+    "id": 170
+  },
+  {
+    "section": "Ⅲ",
+    "title": "結核に係る入院医療提供体制の確保",
+    "page": 694,
+    "document_page": 682,
+    "category": "medical",
+    "type": "revised",
+    "id": 171
+  },
+  {
+    "section": "",
+    "title": "障害者歯科治療における歯科医学的管理の新たな評価",
+    "page": 702,
+    "document_page": 690,
+    "category": "dental",
+    "type": "revised",
+    "id": 172
+  },
+  {
+    "section": "",
+    "title": "有床義歯管理の評価体系の見直し",
+    "page": 705,
+    "document_page": 693,
+    "category": "medical",
+    "type": "revised",
+    "id": 173
+  },
+  {
+    "section": "",
+    "title": "継続的・効果的な歯周病治療の推進",
+    "page": 707,
+    "document_page": 695,
+    "category": "medical",
+    "type": "revised",
+    "id": 174
+  },
+  {
+    "section": "",
+    "title": "小児の咬合機能獲得に向けた対応の充実",
+    "page": 708,
+    "document_page": 696,
+    "category": "medical",
+    "type": "revised",
+    "id": 175
+  },
+  {
+    "section": "",
+    "title": "歯科矯正に係る患者の対象等の見直し",
+    "page": 711,
+    "document_page": 699,
+    "category": "dental",
+    "type": "revised",
+    "id": 176
+  },
+  {
+    "section": "",
+    "title": "周術期及び回復期等の口腔機能管理の推進",
+    "page": 715,
+    "document_page": 703,
+    "category": "medical",
+    "type": "revised",
+    "id": 177
+  },
+  {
+    "section": "",
+    "title": "歯科衛生士による口腔機能に関する実地指導の推進",
+    "page": 718,
+    "document_page": 706,
+    "category": "dental",
+    "type": "revised",
+    "id": 178
+  },
+  {
+    "section": "",
+    "title": "歯科医師と歯科技工士の連携の推進",
+    "page": 720,
+    "document_page": 708,
+    "category": "dental",
+    "type": "revised",
+    "id": 179
+  },
+  {
+    "section": "",
+    "title": "歯科治療のデジタル化等の推進",
+    "page": 728,
+    "document_page": 716,
+    "category": "dental",
+    "type": "revised",
+    "id": 180
+  },
+  {
+    "section": "",
+    "title": "有床義歯の新たな製作法に係る評価の新設",
+    "page": 735,
+    "document_page": 723,
+    "category": "medical",
+    "type": "new",
+    "id": 181
+  },
+  {
+    "section": "",
+    "title": "歯科診療の実態に応じた評価の見直し・明確化",
+    "page": 736,
+    "document_page": 724,
+    "category": "dental",
+    "type": "revised",
+    "id": 182
+  },
+  {
+    "section": "",
+    "title": "歯科固有の技術の評価の見直し",
+    "page": 749,
+    "document_page": 737,
+    "category": "dental",
+    "type": "revised",
+    "id": 183
+  },
+  {
+    "section": "Ⅲ",
+    "title": "調剤基本料の見直し",
+    "page": 754,
+    "document_page": 742,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 184
+  },
+  {
+    "section": "Ⅲ",
+    "title": "特別調剤基本料Ａの見直し",
+    "page": 763,
+    "document_page": 751,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 185
+  },
+  {
+    "section": "Ⅲ",
+    "title": "地域支援体制加算の見直し",
+    "page": 766,
+    "document_page": 754,
+    "category": "medical",
+    "type": "revised",
+    "id": 186
+  },
+  {
+    "section": "Ⅲ",
+    "title": "調剤管理料の見直し",
+    "page": 769,
+    "document_page": 757,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 187
+  },
+  {
+    "section": "Ⅲ",
+    "title": "重複投薬・相互作用等防止加算等の見直し",
+    "page": 771,
+    "document_page": 759,
+    "category": "medical",
+    "type": "revised",
+    "id": 188
+  },
+  {
+    "section": "Ⅲ",
+    "title": "かかりつけ薬剤師の推進",
+    "page": 775,
+    "document_page": 763,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 189
+  },
+  {
+    "section": "Ⅲ",
+    "title": "吸入薬管理指導加算の見直し",
+    "page": 776,
+    "document_page": 764,
+    "category": "medical",
+    "type": "revised",
+    "id": 190
+  },
+  {
+    "section": "Ⅲ",
+    "title": "服用薬剤調整支援料の見直し",
+    "page": 777,
+    "document_page": 765,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 191
+  },
+  {
+    "section": "Ⅲ",
+    "title": "調剤報酬体系の簡素化に向けた見直し",
+    "page": 779,
+    "document_page": 767,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 192
+  },
+  {
+    "section": "Ⅳ",
+    "title": "Ⅳ－１ 後発医薬品・バイオ後続品の使用促進",
+    "page": 788,
+    "document_page": 776,
+    "category": "section_major",
+    "type": "section",
+    "id": 193
+  },
+  {
+    "section": "",
+    "title": "処方箋料の見直し",
+    "page": 788,
+    "document_page": 776,
+    "category": "medical",
+    "type": "revised",
+    "id": 194
+  },
+  {
+    "section": "",
+    "title": "バイオ後続品使用体制加算の見直し",
+    "page": 791,
+    "document_page": 779,
+    "category": "medical",
+    "type": "revised",
+    "id": 195
+  },
+  {
+    "section": "",
+    "title": "医薬品の安定供給に資する体制に係る評価の新設",
+    "page": 796,
+    "document_page": 784,
+    "category": "medical",
+    "type": "new",
+    "id": 196
+  },
+  {
+    "section": "",
+    "title": "バイオ後続品使用促進に係る薬局体制整備の推進",
+    "page": 805,
+    "document_page": 793,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 197
+  },
+  {
+    "section": "",
+    "title": "長期収載品の選定療養の更なる活用",
+    "page": 812,
+    "document_page": 800,
+    "category": "medical",
+    "type": "revised",
+    "id": 198
+  },
+  {
+    "section": "Ⅳ",
+    "title": "Ⅳ－３－１ 市場実勢価格を踏まえた適正な評価",
+    "page": 814,
+    "document_page": 802,
+    "category": "section_major",
+    "type": "section",
+    "id": 199
+  },
+  {
+    "section": "Ⅳ",
+    "title": "実勢価格等を踏まえた検体検査等の評価の適正化",
+    "page": 814,
+    "document_page": 802,
+    "category": "medical",
+    "type": "revised",
+    "id": 200
+  },
+  {
+    "section": "Ⅳ",
+    "title": "薬剤総合評価調整加算の見直し",
+    "page": 815,
+    "document_page": 803,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 201
+  },
+  {
+    "section": "Ⅳ",
+    "title": "オンライン診療の適正な推進に係る評価の見直し",
+    "page": 817,
+    "document_page": 805,
+    "category": "medical",
+    "type": "revised",
+    "id": 202
+  },
+  {
+    "section": "Ⅳ",
+    "title": "オンライン診療における電子処方箋の活用の推進",
+    "page": 818,
+    "document_page": 806,
+    "category": "medical",
+    "type": "revised",
+    "id": 203
+  },
+  {
+    "section": "Ⅳ",
+    "title": "残薬対策の推進に向けた処方箋様式の見直し",
+    "page": 819,
+    "document_page": 807,
+    "category": "medical",
+    "type": "revised",
+    "id": 204
+  },
+  {
+    "section": "Ⅳ",
+    "title": "薬剤総合評価調整加算の見直し",
+    "page": 822,
+    "document_page": 810,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 205
+  },
+  {
+    "section": "Ⅳ",
+    "title": "病棟薬剤業務実施加算の評価の見直し",
+    "page": 823,
+    "document_page": 811,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 206
+  },
+  {
+    "section": "Ⅳ",
+    "title": "医師と薬剤師の同時訪問の推進",
+    "page": 826,
+    "document_page": 814,
+    "category": "pharmacy",
+    "type": "revised",
+    "id": 207
+  },
+  {
+    "section": "Ⅳ",
+    "title": "Ⅳ－４－３ 医学的妥当性や経済性の視点も踏まえた処方の推進",
+    "page": 827,
+    "document_page": 815,
+    "category": "section_major",
+    "type": "section",
+    "id": 208
+  },
+  {
+    "section": "Ⅳ",
+    "title": "栄養保持を目的とした医薬品の保険給付の適正化",
+    "page": 827,
+    "document_page": 815,
+    "category": "medical",
+    "type": "revised",
+    "id": 209
+  },
+  {
+    "section": "Ⅳ",
+    "title": "Ⅳ－５ 外来医療の機能分化と連携",
+    "page": 830,
+    "document_page": 818,
+    "category": "section_major",
+    "type": "section",
+    "id": 210
+  }
+];
+
+        let revisionItems = [];
+        let currentCategory = 'all';
+        let currentType = null;
+        let searchTerm = '';
+        let selectedItem = null;
+        let currentPdfUrl = '';
+
+        // Initialize
+        function init() {
+            // IDを付与
+            revisionItems = REVISION_ITEMS_DATA.map((item, index) => ({
+                ...item,
+                id: index + 1
+            }));
+            
+            updateStats();
+            updateCounts();
+            renderItems();
+            attachEventListeners();
+        }
+
+        // 統計情報を更新
+        function updateStats() {
+            const contentItems = revisionItems.filter(i => i.type !== 'section');
+            const totalItems = contentItems.length;
+            const newItems = contentItems.filter(i => i.type === 'new').length;
+            const revisedItems = contentItems.filter(i => i.type === 'revised').length;
+            const deletedItems = contentItems.filter(i => i.type === 'deleted').length;
+
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">総改定項目数</div>
+                    <div class="stat-value">${totalItems}</div>
+                    <div class="stat-change">831ページから抽出</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">新設項目</div>
+                    <div class="stat-value">${newItems}</div>
+                    <div class="stat-change">全体の ${((newItems/totalItems)*100).toFixed(1)}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">改定項目</div>
+                    <div class="stat-value">${revisedItems}</div>
+                    <div class="stat-change">全体の ${((revisedItems/totalItems)*100).toFixed(1)}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">削除項目</div>
+                    <div class="stat-value">${deletedItems}</div>
+                    <div class="stat-change">要件見直し含む</div>
+                </div>
+            `;
+        }
+
+        // カウントを更新
+        function updateCounts() {
+            const contentItems = revisionItems.filter(i => i.type !== 'section');
+            document.getElementById('count-all').textContent = contentItems.length;
+            document.getElementById('count-medical').textContent = contentItems.filter(i => i.category === 'medical').length;
+            document.getElementById('count-dental').textContent = contentItems.filter(i => i.category === 'dental').length;
+            document.getElementById('count-pharmacy').textContent = contentItems.filter(i => i.category === 'pharmacy').length;
+            document.getElementById('count-nursing').textContent = contentItems.filter(i => i.category === 'nursing').length;
+            
+            document.getElementById('count-new').textContent = contentItems.filter(i => i.type === 'new').length;
+            document.getElementById('count-revised').textContent = contentItems.filter(i => i.type === 'revised').length;
+            document.getElementById('count-deleted').textContent = contentItems.filter(i => i.type === 'deleted').length;
+        }
+
+        // アイテムを表示
+        function renderItems() {
+            const filteredItems = revisionItems.filter(item => {
+                const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+                const matchesType = !currentType || item.type === currentType;
+                const matchesSearch = !searchTerm || 
+                    item.title.toLowerCase().includes(searchTerm.toLowerCase());
+                
+                return matchesCategory && matchesType && matchesSearch;
+            });
+
+            const itemsList = document.getElementById('itemsList');
+            const itemsInfo = document.getElementById('itemsInfo');
+            
+            itemsInfo.textContent = `${filteredItems.length}件の項目`;
+
+            if (filteredItems.length === 0) {
+                itemsList.innerHTML = '<div class="loading">該当する項目がありません</div>';
+                return;
+            }
+
+            itemsList.innerHTML = filteredItems.map(item => `
+                <div class="item-card ${selectedItem === item.id ? 'selected' : ''}" data-id="${item.id}" style="${item.type === 'section' ? 'background: linear-gradient(to right, #f0f4f8, white); border-left: 4px solid #0066CC; font-weight: 600;' : ''}">
+                    <div class="item-header">
+                        <div class="item-title">
+                            ${item.section ? '<span style="color: #0066CC; font-weight: 700; margin-right: 0.5rem;">' + item.section + '</span>' : ''}
+                            ${item.title}
+                        </div>
+                        <div class="item-category category-${item.category}">
+                            ${getCategoryLabel(item.category)}
+                        </div>
+                    </div>
+                    ${item.type !== 'section' ? `
+                    <div class="item-meta">
+                        <span>📄 本文 p.${item.document_page} (PDF p.${item.page})</span>
+                        <span class="type-badge type-${item.type}">
+                            ${getTypeLabel(item.type)}
+                        </span>
+                    </div>
+                    ` : ''}
+                </div>
+            `).join('');
+
+            // クリックイベントを追加
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const itemId = parseInt(this.dataset.id);
+                    selectItem(itemId);
+                });
+            });
+        }
+
+        // アイテムを選択してPDFを表示
+        function selectItem(itemId) {
+            selectedItem = itemId;
+            const item = revisionItems.find(i => i.id === itemId);
+            
+            if (item) {
+                renderItems(); // 選択状態を更新
+                
+                // PDFを表示（実際のPDFファイルのパスに置き換えてください）
+                currentPdfUrl = `revision_document.pdf#page=${item.page}`;
+                
+                const pdfViewer = document.getElementById('pdfViewer');
+                pdfViewer.innerHTML = `<iframe src="${currentPdfUrl}"></iframe>`;
+            }
+        }
+
+        // ヘルパー関数
+        function getCategoryLabel(category) {
+            const labels = {
+                medical: '医科',
+                dental: '歯科',
+                pharmacy: '調剤',
+                nursing: '訪問看護',
+                section_major: '大項目',
+                section_middle: '中項目'
+            };
+            return labels[category] || category;
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                new: '新設',
+                revised: '改定',
+                deleted: '削除'
+            };
+            return labels[type] || type;
+        }
+
+        // イベントリスナーを追加
+        function attachEventListeners() {
+            // カテゴリーフィルター
+            document.querySelectorAll('#categoryFilter .filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#categoryFilter .filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentCategory = this.dataset.category;
+                    renderItems();
+                });
+            });
+
+            // 改定区分フィルター
+            document.querySelectorAll('#typeFilter .filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.classList.contains('active')) {
+                        this.classList.remove('active');
+                        currentType = null;
+                    } else {
+                        document.querySelectorAll('#typeFilter .filter-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        currentType = this.dataset.type;
+                    }
+                    renderItems();
+                });
+            });
+
+            // 検索
+            document.getElementById('searchBox').addEventListener('input', function(e) {
+                searchTerm = e.target.value;
+                renderItems();
+            });
+
+            // 新しいタブで開く
+            document.getElementById('openNewTab')?.addEventListener('click', () => {
+                if (currentPdfUrl) {
+                    window.open(currentPdfUrl, '_blank');
+                } else {
+                    alert('項目を選択してください');
+                }
+            });
+        }
+
+        // ページ読み込み時に初期化
+        init();
+    </script>
+</body>
+</html>
