@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>診療報酬改定ナビゲーター - 令和8年度</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0066CC;
+            --primary-dark: #004C99;
+            --secondary: #00A3BF;
+            --accent: #FF6B35;
+            --bg-main: #F8FAFB;
+            --bg-card: #FFFFFF;
+            --text-primary: #1A2332;
+            --text-secondary: #5A6C7D;
+            --border: #E1E8ED;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr 420px;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="30" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="15" r="1" fill="white" opacity="0.1"/><circle cx="70" cy="30" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="20" r="1" fill="white" opacity="0.1"/></svg>');
+            background-size: 100px 100px;
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .header-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .filter-section {
+            margin-bottom: 2rem;
+        }
+
+        .filter-section h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            background: rgba(0,102,204,0.05);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-count {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--primary);
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin-top: 0.5rem;
+        }
+
+        .items-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .section-title-info {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .item-card {
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .item-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+            transform: translateX(4px);
+        }
+
+        .item-card.selected {
+            border-color: var(--primary);
+            background: rgba(0,102,204,0.03);
+            border-left: 4px solid var(--primary);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .item-category {
+            display: inline-block;
+            padding: 0.3rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+        }
+
+        .category-medical { background: #E3F2FD; color: #1565C0; }
+        .category-dental { background: #F3E5F5; color: #6A1B9A; }
+        .category-pharmacy { background: #E8F5E9; color: #2E7D32; }
+        .category-nursing { background: #FFF3E0; color: #E65100; }
+
+        .item-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+
+        .item-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .type-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .type-new { background: #E8F5E9; color: #2E7D32; }
+        .type-revised { background: #E3F2FD; color: #1565C0; }
+        .type-deleted { background: #FFEBEE; color: #C62828; }
+
+        /* PDF Panel */
+        .pdf-panel {
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pdf-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: white;
+        }
+
+        .pdf-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pdf-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .pdf-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .pdf-btn:hover {
+            background: var(--bg-main);
+            border-color: var(--primary);
+        }
+
+        .pdf-viewer {
+            flex: 1;
+            background: #F5F5F5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: auto;
+        }
+
+        .pdf-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem;
+        }
+
+        .pdf-placeholder svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .item-card {
+            animation: slideIn 0.3s ease-out backwards;
+        }
+
+        .item-card:nth-child(1) { animation-delay: 0.05s; }
+        .item-card:nth-child(2) { animation-delay: 0.1s; }
+        .item-card:nth-child(3) { animation-delay: 0.15s; }
+        .item-card:nth-child(4) { animation-delay: 0.2s; }
+        .item-card:nth-child(5) { animation-delay: 0.25s; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 250px 1fr;
+            }
+            .pdf-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>📋 診療報酬改定ナビゲーター</h1>
+                <div class="header-meta">
+                    <div class="header-badge">令和8年度改定</div>
+                    <div>総831ページ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="filter-section">
+                <h3>検索</h3>
+                <input type="text" class="search-box" id="searchBox" placeholder="項目名で検索...">
+            </div>
+
+            <div class="filter-section">
+                <h3>領域</h3>
+                <div class="filter-group" id="categoryFilter">
+                    <button class="filter-btn active" data-category="all">
+                        <span>すべて</span>
+                        <span class="filter-count" id="count-all">-</span>
+                    </button>
+                    <button class="filter-btn" data-category="medical">
+                        <span>医科</span>
+                        <span class="filter-count" id="count-medical">-</span>
+                    </button>
+                    <button class="filter-btn" data-category="dental">
+                        <span>歯科</span>
+                        <span class="filter-count" id="count-dental">-</span>
+                    </button>
+                    <button class="filter-btn" data-category="pharmacy">
+                        <span>調剤</span>
+                        <span class="filter-count" id="count-pharmacy">-</span>
+                    </button>
+                    <button class="filter-btn" data-category="nursing">
+                        <span>訪問看護</span>
+                        <span class="filter-count" id="count-nursing">-</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>改定区分</h3>
+                <div class="filter-group" id="typeFilter">
+                    <button class="filter-btn" data-type="new">
+                        <span>新設</span>
+                        <span class="filter-count" id="count-new">-</span>
+                    </button>
+                    <button class="filter-btn" data-type="revised">
+                        <span>改定</span>
+                        <span class="filter-count" id="count-revised">-</span>
+                    </button>
+                    <button class="filter-btn" data-type="deleted">
+                        <span>削除</span>
+                        <span class="filter-count" id="count-deleted">-</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="stats-grid" id="statsGrid">
+                <div class="loading">データを読み込んでいます...</div>
+            </div>
+
+            <div class="items-section">
+                <div class="section-header">
+                    <div>
+                        <h2>改定項目一覧</h2>
+                        <div class="section-title-info" id="itemsInfo">-</div>
+                    </div>
+                </div>
+
+                <div class="items-list" id="itemsList">
+                    <div class="loading">データを読み込んでいます...</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- PDF Panel -->
+        <aside class="pdf-panel">
+            <div class="pdf-header">
+                <h3>PDF参照</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                    項目をクリックして詳細を表示
+                </p>
+                <div class="pdf-controls">
+                    <button class="pdf-btn" id="openNewTab">新しいタブで開く</button>
+                </div>
+            </div>
+            <div class="pdf-viewer" id="pdfViewer">
+                <div class="pdf-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <p>項目を選択すると<br>該当ページが表示されます</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // 実際のPDFデータ（JSONから読み込んだデータを埋め込み）
+        const REVISION_ITEMS_DATA = [
+  {
+    "title": "物件費の高騰を踏まえた対応",
+    "page": 2,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "入院時の食費及び光熱水費の基準の見直し",
+    "page": 14,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "入院時の食事療養に係る見直し",
+    "page": 16,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "賃上げに向けた評価の見直し",
+    "page": 18,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "夜勤を含む負担の軽減及び処遇改善に資する計画の明確化",
+    "page": 44,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "ICT 等の活用による看護業務効率化の推進",
+    "page": 46,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "医師事務作業補助体制加算の見直し",
+    "page": 52,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "医療機関等における事務等の簡素化・効率化",
+    "page": 58,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "様式９の見直し",
+    "page": 63,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "医師の働き方改革及び診療科偏在対策の推進",
+    "page": 67,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "処置及び手術の休日・時間外・深夜加算１の見直し",
+    "page": 76,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "感染対策向上加算等における専従要件の見直し",
+    "page": 82,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "常勤職員の常勤要件に係る勤務時間数の見直し",
+    "page": 88,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "質の高い摂食嚥下機能回復に係る取組の推進",
+    "page": 92,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "急性期病院一般入院基本料等の新設",
+    "page": 105,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "重症度、医療・看護必要度の見直し",
+    "page": 121,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "急性期総合体制加算の新設",
+    "page": 129,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "特定機能病院入院基本料の見直し",
+    "page": 138,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "特定集中治療室管理料の見直し",
+    "page": 144,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "ハイケアユニット入院医療管理料の見直し",
+    "page": 156,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "救命救急入院料の見直し",
+    "page": 161,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "脳卒中ケアユニット入院医療管理料の見直し",
+    "page": 171,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "地域包括医療病棟の見直し",
+    "page": 173,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "療養病棟入院基本料の見直し",
+    "page": 187,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "障害者施設等入院基本料等の見直し",
+    "page": 194,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "入院料に包括されない 除外薬剤・注射薬の範囲の見直し",
+    "page": 197,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "DPC／PDPS の見直し",
+    "page": 206,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "医療資源の少ない地域の対象地域の見直し",
+    "page": 232,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "歯科巡回診療に係る適切な推進",
+    "page": 244,
+    "category": "dental",
+    "type": "revised"
+  },
+  {
+    "title": "包括期入院医療における充実した後方支援の評価",
+    "page": 250,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "地域包括ケア病棟における初期加算等の評価の見直し",
+    "page": 252,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "入退院支援加算等の見直し",
+    "page": 255,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "介護支援等連携指導料の見直し",
+    "page": 262,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "回復期リハビリテーション病棟における高次脳機能障害者に対する退院支援の推進",
+    "page": 264,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "リハビリテーション総合計画評価料及びリハビリテーション計画提供料の見直し",
+    "page": 270,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "疾患別リハビリテーション料における質の高いリハビリテーションの提供の推進",
+    "page": 274,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "がん患者リハビリテーション料の見直し",
+    "page": 282,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "栄養情報提供加算の新設",
+    "page": 288,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "栄養サポートチーム加算の見直し",
+    "page": 292,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "周術期等口腔機能管理料等の見直し",
+    "page": 299,
+    "category": "dental",
+    "type": "revised"
+  },
+  {
+    "title": "口腔機能管理等に係る歯科医療機関連携加算の新設",
+    "page": 308,
+    "category": "dental",
+    "type": "new"
+  },
+  {
+    "title": "総合入院体制加算等の見直し",
+    "page": 314,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "がんゲノムプロファイリング検査の適応拡大等",
+    "page": 324,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "遺伝性腫瘍カウンセリング加算の新設",
+    "page": 331,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "がん治療連携計画策定料等の見直し",
+    "page": 335,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "緩和ケア診療加算等の見直し",
+    "page": 341,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "認知症ケア加算等の見直し",
+    "page": 348,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "せん妄ハイリスク患者ケア加算の見直し",
+    "page": 353,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "精神疾患診療体制加算の見直し",
+    "page": 358,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "依存症入院医療管理加算の見直し",
+    "page": 363,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "小児入院医療管理料等の見直し",
+    "page": 368,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "小児特定疾患カウンセリング料の見直し",
+    "page": 376,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "小児慢性特定疾病医療支援料の新設",
+    "page": 381,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "母体・胎児集中治療室管理料等の見直し",
+    "page": 385,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "ハイリスク妊産婦連携指導料の見直し",
+    "page": 394,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "在宅療養支援診療所及び在宅療養支援病院の見直し",
+    "page": 401,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "在宅患者訪問診療料等の見直し",
+    "page": 412,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "在宅がん医療総合診療料の見直し",
+    "page": 422,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "訪問看護管理療養費等の見直し",
+    "page": 427,
+    "category": "nursing",
+    "type": "revised"
+  },
+  {
+    "title": "訪問看護情報提供療養費の新設",
+    "page": 438,
+    "category": "nursing",
+    "type": "new"
+  },
+  {
+    "title": "精神科訪問看護・指導料の見直し",
+    "page": 443,
+    "category": "nursing",
+    "type": "revised"
+  },
+  {
+    "title": "在宅患者訪問薬剤管理指導料の見直し",
+    "page": 450,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "在宅患者訪問栄養食事指導料の見直し",
+    "page": 457,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "在宅患者訪問口腔リハビリテーション指導管理料の見直し",
+    "page": 463,
+    "category": "dental",
+    "type": "revised"
+  },
+  {
+    "title": "在宅療養指導管理料の見直し",
+    "page": 469,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "在宅酸素療法指導管理料等の見直し",
+    "page": 477,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "救急搬送看護体制加算の新設",
+    "page": 485,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "外来在宅共同指導料の新設",
+    "page": 490,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "外来化学療法加算等の見直し",
+    "page": 496,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "連携強化診療情報提供料の新設",
+    "page": 504,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "診療情報提供料（Ⅰ）等の見直し",
+    "page": 509,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "電子的保健医療情報活用加算の見直し",
+    "page": 519,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "医療情報取得加算の新設",
+    "page": 524,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "紹介受診重点医療機関入院診療加算の新設",
+    "page": 528,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "かかりつけ医機能評価料の新設",
+    "page": 535,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "地域包括診療料等の見直し",
+    "page": 544,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "外来感染対策向上加算の新設",
+    "page": 552,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "連携強化加算の新設",
+    "page": 558,
+    "category": "medical",
+    "type": "new"
+  },
+  {
+    "title": "生活習慣病管理料の見直し",
+    "page": 564,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "小児科外来診療料等の見直し",
+    "page": 574,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "歯科疾患管理料等の見直し",
+    "page": 582,
+    "category": "dental",
+    "type": "revised"
+  },
+  {
+    "title": "歯科疾患在宅療養管理料の見直し",
+    "page": 591,
+    "category": "dental",
+    "type": "revised"
+  },
+  {
+    "title": "う蝕歯即時充填形成の見直し",
+    "page": 597,
+    "category": "dental",
+    "type": "revised"
+  },
+  {
+    "title": "薬剤師による服薬指導等の評価の見直し",
+    "page": 603,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "調剤管理料の見直し",
+    "page": 612,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "服薬情報等提供料の新設",
+    "page": 618,
+    "category": "pharmacy",
+    "type": "new"
+  },
+  {
+    "title": "かかりつけ薬剤師指導料の見直し",
+    "page": 624,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "調剤基本料の見直し",
+    "page": 632,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "医療DXの推進に係る評価",
+    "page": 641,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "オンライン診療の適切な実施の推進",
+    "page": 649,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "オンライン服薬指導の実施",
+    "page": 658,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "医薬品の適正使用及び医療安全対策の推進",
+    "page": 665,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "後発医薬品の使用促進",
+    "page": 673,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "抗菌薬適正使用の推進",
+    "page": 681,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "新興感染症等への対応",
+    "page": 689,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "医療機器の効率的かつ有効な利用の推進",
+    "page": 697,
+    "category": "medical",
+    "type": "revised"
+  },
+  {
+    "title": "バイオ医薬品・バイオシミラーの使用促進",
+    "page": 705,
+    "category": "pharmacy",
+    "type": "revised"
+  },
+  {
+    "title": "費用対効果の評価の実施",
+    "page": 713,
+    "category": "medical",
+    "type": "revised"
+  }
+];
+
+        let revisionItems = [];
+        let currentCategory = 'all';
+        let currentType = null;
+        let searchTerm = '';
+        let selectedItem = null;
+        let currentPdfUrl = '';
+
+        // Initialize
+        function init() {
+            // IDを付与
+            revisionItems = REVISION_ITEMS_DATA.map((item, index) => ({
+                ...item,
+                id: index + 1
+            }));
+            
+            updateStats();
+            updateCounts();
+            renderItems();
+            attachEventListeners();
+        }
+
+        // 統計情報を更新
+        function updateStats() {
+            const totalItems = revisionItems.length;
+            const newItems = revisionItems.filter(i => i.type === 'new').length;
+            const revisedItems = revisionItems.filter(i => i.type === 'revised').length;
+            const deletedItems = revisionItems.filter(i => i.type === 'deleted').length;
+
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">総改定項目数</div>
+                    <div class="stat-value">${totalItems}</div>
+                    <div class="stat-change">831ページから抽出</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">新設項目</div>
+                    <div class="stat-value">${newItems}</div>
+                    <div class="stat-change">全体の ${((newItems/totalItems)*100).toFixed(1)}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">改定項目</div>
+                    <div class="stat-value">${revisedItems}</div>
+                    <div class="stat-change">全体の ${((revisedItems/totalItems)*100).toFixed(1)}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">削除項目</div>
+                    <div class="stat-value">${deletedItems}</div>
+                    <div class="stat-change">要件見直し含む</div>
+                </div>
+            `;
+        }
+
+        // カウントを更新
+        function updateCounts() {
+            document.getElementById('count-all').textContent = revisionItems.length;
+            document.getElementById('count-medical').textContent = revisionItems.filter(i => i.category === 'medical').length;
+            document.getElementById('count-dental').textContent = revisionItems.filter(i => i.category === 'dental').length;
+            document.getElementById('count-pharmacy').textContent = revisionItems.filter(i => i.category === 'pharmacy').length;
+            document.getElementById('count-nursing').textContent = revisionItems.filter(i => i.category === 'nursing').length;
+            
+            document.getElementById('count-new').textContent = revisionItems.filter(i => i.type === 'new').length;
+            document.getElementById('count-revised').textContent = revisionItems.filter(i => i.type === 'revised').length;
+            document.getElementById('count-deleted').textContent = revisionItems.filter(i => i.type === 'deleted').length;
+        }
+
+        // アイテムを表示
+        function renderItems() {
+            const filteredItems = revisionItems.filter(item => {
+                const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+                const matchesType = !currentType || item.type === currentType;
+                const matchesSearch = !searchTerm || 
+                    item.title.toLowerCase().includes(searchTerm.toLowerCase());
+                
+                return matchesCategory && matchesType && matchesSearch;
+            });
+
+            const itemsList = document.getElementById('itemsList');
+            const itemsInfo = document.getElementById('itemsInfo');
+            
+            itemsInfo.textContent = `${filteredItems.length}件の項目`;
+
+            if (filteredItems.length === 0) {
+                itemsList.innerHTML = '<div class="loading">該当する項目がありません</div>';
+                return;
+            }
+
+            itemsList.innerHTML = filteredItems.map(item => `
+                <div class="item-card ${selectedItem === item.id ? 'selected' : ''}" data-id="${item.id}">
+                    <div class="item-header">
+                        <div class="item-title">${item.title}</div>
+                        <div class="item-category category-${item.category}">
+                            ${getCategoryLabel(item.category)}
+                        </div>
+                    </div>
+                    <div class="item-meta">
+                        <span>📄 p.${item.page}</span>
+                        <span class="type-badge type-${item.type}">
+                            ${getTypeLabel(item.type)}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+
+            // クリックイベントを追加
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const itemId = parseInt(this.dataset.id);
+                    selectItem(itemId);
+                });
+            });
+        }
+
+        // アイテムを選択してPDFを表示
+        function selectItem(itemId) {
+            selectedItem = itemId;
+            const item = revisionItems.find(i => i.id === itemId);
+            
+            if (item) {
+                renderItems(); // 選択状態を更新
+                
+                // PDFを表示（実際のPDFファイルのパスに置き換えてください）
+                currentPdfUrl = `revision_document.pdf#page=${item.page}`;
+                
+                const pdfViewer = document.getElementById('pdfViewer');
+                pdfViewer.innerHTML = `<iframe src="${currentPdfUrl}"></iframe>`;
+            }
+        }
+
+        // ヘルパー関数
+        function getCategoryLabel(category) {
+            const labels = {
+                medical: '医科',
+                dental: '歯科',
+                pharmacy: '調剤',
+                nursing: '訪問看護'
+            };
+            return labels[category] || category;
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                new: '新設',
+                revised: '改定',
+                deleted: '削除'
+            };
+            return labels[type] || type;
+        }
+
+        // イベントリスナーを追加
+        function attachEventListeners() {
+            // カテゴリーフィルター
+            document.querySelectorAll('#categoryFilter .filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#categoryFilter .filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentCategory = this.dataset.category;
+                    renderItems();
+                });
+            });
+
+            // 改定区分フィルター
+            document.querySelectorAll('#typeFilter .filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.classList.contains('active')) {
+                        this.classList.remove('active');
+                        currentType = null;
+                    } else {
+                        document.querySelectorAll('#typeFilter .filter-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        currentType = this.dataset.type;
+                    }
+                    renderItems();
+                });
+            });
+
+            // 検索
+            document.getElementById('searchBox').addEventListener('input', function(e) {
+                searchTerm = e.target.value;
+                renderItems();
+            });
+
+            // 新しいタブで開く
+            document.getElementById('openNewTab')?.addEventListener('click', () => {
+                if (currentPdfUrl) {
+                    window.open(currentPdfUrl, '_blank');
+                } else {
+                    alert('項目を選択してください');
+                }
+            });
+        }
+
+        // ページ読み込み時に初期化
+        init();
+    </script>
+</body>
+</html>
