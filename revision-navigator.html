@@ -349,28 +349,6 @@
             margin-bottom: 0.5rem;
         }
 
-        .pdf-controls {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .pdf-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border);
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-            flex: 1;
-        }
-
-        .pdf-btn:hover {
-            background: var(--bg-main);
-            border-color: var(--primary);
-        }
-
         .pdf-viewer {
             flex: 1;
             background: #F5F5F5;
@@ -530,6 +508,16 @@
                     </button>
                 </div>
             </div>
+
+            <div class="filter-section">
+                <h3>大項目</h3>
+                <div class="filter-group" id="majorSectionFilter">
+                    <button class="filter-btn active" data-major="all">
+                        <span>すべて</span>
+                        <span class="filter-count" id="count-major-all">-</span>
+                    </button>
+                </div>
+            </div>
         </aside>
 
         <!-- Main Content -->
@@ -559,9 +547,6 @@
                 <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">
                     項目をクリックして詳細を表示
                 </p>
-                <div class="pdf-controls">
-                    <button class="pdf-btn" id="openNewTab">新しいタブで開く</button>
-                </div>
             </div>
             <div class="pdf-viewer" id="pdfViewer">
                 <div class="pdf-placeholder">
@@ -575,6 +560,16 @@
                     <p>項目を選択すると<br>該当ページが表示されます</p>
                 </div>
             </div>
+
+            <div class="filter-section">
+                <h3>大項目</h3>
+                <div class="filter-group" id="majorSectionFilter">
+                    <button class="filter-btn active" data-major="all">
+                        <span>すべて</span>
+                        <span class="filter-count" id="count-major-all">-</span>
+                    </button>
+                </div>
+            </div>
         </aside>
     </div>
 
@@ -582,1900 +577,2241 @@
         // 実際のPDFデータ（JSONから読み込んだデータを埋め込み）
         const REVISION_ITEMS_DATA = [
   {
-    "section": "Ⅰ",
+    "section": "Ⅰ－１",
+    "title": "医療機関等が直面する人件費や、医療材料費、食材料費、光熱水費及び委託費等といった物件費の高騰を踏まえた対応",
+    "page": 14,
+    "document_page": 2,
+    "category": "section_middle",
+    "type": "section",
+    "parent_section": "Ⅰ",
+    "id": 1
+  },
+  {
+    "section": "①",
     "title": "物件費の高騰を踏まえた対応",
     "page": 14,
     "document_page": 2,
     "category": "medical",
     "type": "revised",
-    "id": 1
+    "parent_section": "Ⅰ－１",
+    "id": 2
   },
   {
-    "section": "Ⅰ",
+    "section": "②",
     "title": "入院時の食費及び光熱水費の基準の見直し",
     "page": 26,
     "document_page": 14,
     "category": "medical",
     "type": "revised",
-    "id": 2
+    "parent_section": "Ⅰ－１",
+    "id": 3
   },
   {
-    "section": "Ⅰ",
+    "section": "③",
     "title": "入院時の食事療養に係る見直し",
     "page": 28,
     "document_page": 16,
     "category": "medical",
     "type": "revised",
-    "id": 3
-  },
-  {
-    "section": "Ⅰ",
-    "title": "Ⅰ－２－１ 医療従事者の処遇改善",
-    "page": 30,
-    "document_page": 18,
-    "category": "section_major",
-    "type": "section",
+    "parent_section": "Ⅰ－１",
     "id": 4
   },
   {
-    "section": "Ⅰ",
+    "section": "Ⅰ－２",
+    "title": "－１ 医療従事者の処遇改善",
+    "page": 30,
+    "document_page": 18,
+    "category": "section_middle",
+    "type": "section",
+    "parent_section": "Ⅰ",
+    "id": 5
+  },
+  {
+    "section": "①",
     "title": "賃上げに向けた評価の見直し",
     "page": 30,
     "document_page": 18,
     "category": "medical",
     "type": "revised",
-    "id": 5
+    "parent_section": "Ⅰ－２",
+    "id": 6
   },
   {
-    "section": "Ⅰ",
+    "section": "②",
     "title": "夜勤を含む負担の軽減及び処遇改善に資する計画の明確化",
     "page": 56,
     "document_page": 44,
     "category": "medical",
     "type": "revised",
-    "id": 6
-  },
-  {
-    "section": "Ⅰ",
-    "title": "Ⅰ－２－２ 業務の効率化に資する ICT、AI、IoT 等の利活用の推進",
-    "page": 58,
-    "document_page": 46,
-    "category": "section_major",
-    "type": "section",
+    "parent_section": "Ⅰ－２",
     "id": 7
   },
   {
-    "section": "Ⅰ",
+    "section": "Ⅰ－２",
+    "title": "－２ 業務の効率化に資する ICT、AI、IoT 等の利活用の推進",
+    "page": 58,
+    "document_page": 46,
+    "category": "section_middle",
+    "type": "section",
+    "parent_section": "Ⅰ",
+    "id": 8
+  },
+  {
+    "section": "①",
     "title": "ICT 等の活用による看護業務効率化の推進",
     "page": 58,
     "document_page": 46,
     "category": "medical",
     "type": "revised",
-    "id": 8
+    "parent_section": "Ⅰ－２",
+    "id": 9
   },
   {
-    "section": "Ⅰ",
+    "section": "②",
     "title": "医師事務作業補助体制加算の見直し",
     "page": 64,
     "document_page": 52,
     "category": "medical",
     "type": "revised",
-    "id": 9
+    "parent_section": "Ⅰ－２",
+    "id": 10
   },
   {
-    "section": "Ⅰ",
+    "section": "③",
     "title": "医療機関等における事務等の簡素化・効率化",
     "page": 70,
     "document_page": 58,
     "category": "medical",
     "type": "revised",
-    "id": 10
+    "parent_section": "Ⅰ－２",
+    "id": 11
   },
   {
-    "section": "Ⅰ",
+    "section": "④",
     "title": "様式９の見直し",
     "page": 75,
     "document_page": 63,
     "category": "medical",
     "type": "revised",
-    "id": 11
-  },
-  {
-    "section": "Ⅰ",
-    "title": "Ⅰ－２－４ 医師の働き方改革の推進／診療科偏在対策",
-    "page": 79,
-    "document_page": 67,
-    "category": "section_major",
-    "type": "section",
+    "parent_section": "Ⅰ－２",
     "id": 12
   },
   {
-    "section": "Ⅰ",
+    "section": "Ⅰ－２",
+    "title": "－４ 医師の働き方改革の推進／診療科偏在対策",
+    "page": 79,
+    "document_page": 67,
+    "category": "section_middle",
+    "type": "section",
+    "parent_section": "Ⅰ",
+    "id": 13
+  },
+  {
+    "section": "①",
     "title": "医師の働き方改革及び診療科偏在対策の推進",
     "page": 79,
     "document_page": 67,
     "category": "medical",
     "type": "revised",
-    "id": 13
+    "parent_section": "Ⅰ－２",
+    "id": 14
   },
   {
-    "section": "Ⅰ",
+    "section": "②",
     "title": "処置及び手術の休日・時間外・深夜加算１の見直し",
     "page": 88,
     "document_page": 76,
     "category": "medical",
     "type": "revised",
-    "id": 14
-  },
-  {
-    "section": "Ⅰ",
-    "title": "Ⅰ－２－５ 診療報酬上求める基準の柔軟化",
-    "page": 91,
-    "document_page": 79,
-    "category": "section_major",
-    "type": "section",
+    "parent_section": "Ⅰ－２",
     "id": 15
   },
   {
-    "section": "Ⅰ",
+    "section": "Ⅰ－２",
+    "title": "－５ 診療報酬上求める基準の柔軟化",
+    "page": 91,
+    "document_page": 79,
+    "category": "section_middle",
+    "type": "section",
+    "parent_section": "Ⅰ",
+    "id": 16
+  },
+  {
+    "section": "②",
     "title": "感染対策向上加算等における専従要件の見直し",
     "page": 94,
     "document_page": 82,
     "category": "medical",
     "type": "revised",
-    "id": 16
+    "parent_section": "Ⅰ－２",
+    "id": 17
   },
   {
-    "section": "Ⅰ",
+    "section": "③",
     "title": "常勤職員の常勤要件に係る勤務時間数の見直し",
     "page": 100,
     "document_page": 88,
     "category": "medical",
     "type": "revised",
-    "id": 17
+    "parent_section": "Ⅰ－２",
+    "id": 18
   },
   {
-    "section": "Ⅰ",
+    "section": "④",
     "title": "質の高い摂食嚥下機能回復に係る取組の推進",
     "page": 104,
     "document_page": 92,
     "category": "medical",
     "type": "revised",
-    "id": 18
+    "parent_section": "Ⅰ－２",
+    "id": 19
   },
   {
-    "section": "Ⅱ",
+    "section": "①",
     "title": "急性期病院一般入院基本料等の新設",
     "page": 117,
     "document_page": 105,
     "category": "medical",
     "type": "new",
-    "id": 19
+    "parent_section": "Ⅰ－２",
+    "id": 20
   },
   {
-    "section": "Ⅱ",
+    "section": "②",
     "title": "重症度、医療・看護必要度の見直し",
     "page": 133,
     "document_page": 121,
     "category": "medical",
     "type": "revised",
-    "id": 20
+    "parent_section": "Ⅰ－２",
+    "id": 21
   },
   {
-    "section": "Ⅱ",
+    "section": "③",
     "title": "急性期総合体制加算の新設",
     "page": 141,
     "document_page": 129,
     "category": "medical",
     "type": "new",
-    "id": 21
+    "parent_section": "Ⅰ－２",
+    "id": 22
   },
   {
-    "section": "Ⅱ",
+    "section": "④",
     "title": "特定機能病院入院基本料の見直し",
     "page": 150,
     "document_page": 138,
     "category": "medical",
     "type": "revised",
-    "id": 22
+    "parent_section": "Ⅰ－２",
+    "id": 23
   },
   {
-    "section": "Ⅱ",
+    "section": "⑤",
     "title": "特定集中治療室管理料の見直し",
     "page": 156,
     "document_page": 144,
     "category": "medical",
     "type": "revised",
-    "id": 23
+    "parent_section": "Ⅰ－２",
+    "id": 24
   },
   {
-    "section": "Ⅱ",
+    "section": "⑥",
     "title": "ハイケアユニット入院医療管理料の見直し",
     "page": 168,
     "document_page": 156,
     "category": "medical",
     "type": "revised",
-    "id": 24
+    "parent_section": "Ⅰ－２",
+    "id": 25
   },
   {
-    "section": "Ⅱ",
+    "section": "⑦",
     "title": "救命救急入院料の見直し",
     "page": 173,
     "document_page": 161,
     "category": "medical",
     "type": "revised",
-    "id": 25
+    "parent_section": "Ⅰ－２",
+    "id": 26
   },
   {
-    "section": "Ⅱ",
+    "section": "⑧",
     "title": "脳卒中ケアユニット入院医療管理料の見直し",
     "page": 183,
     "document_page": 171,
     "category": "medical",
     "type": "revised",
-    "id": 26
+    "parent_section": "Ⅰ－２",
+    "id": 27
   },
   {
-    "section": "Ⅱ",
+    "section": "⑨",
     "title": "地域包括医療病棟の見直し",
     "page": 185,
     "document_page": 173,
     "category": "medical",
     "type": "revised",
-    "id": 27
+    "parent_section": "Ⅰ－２",
+    "id": 28
   },
   {
-    "section": "Ⅱ",
+    "section": "⑪",
     "title": "療養病棟入院基本料の見直し",
     "page": 199,
     "document_page": 187,
     "category": "medical",
     "type": "revised",
-    "id": 28
+    "parent_section": "Ⅰ－２",
+    "id": 29
   },
   {
-    "section": "Ⅱ",
+    "section": "⑫",
     "title": "障害者施設等入院基本料等の見直し",
     "page": 206,
     "document_page": 194,
     "category": "medical",
     "type": "revised",
-    "id": 29
+    "parent_section": "Ⅰ－２",
+    "id": 30
   },
   {
-    "section": "Ⅱ",
+    "section": "⑭",
     "title": "入院料に包括されない 除外薬剤・注射薬の範囲の見直し",
     "page": 209,
     "document_page": 197,
     "category": "pharmacy",
     "type": "revised",
-    "id": 30
+    "parent_section": "Ⅰ－２",
+    "id": 31
   },
   {
-    "section": "Ⅱ",
+    "section": "⑮",
     "title": "DPC／PDPS の見直し",
     "page": 218,
     "document_page": 206,
     "category": "medical",
     "type": "revised",
-    "id": 31
+    "parent_section": "Ⅰ－２",
+    "id": 32
   },
   {
-    "section": "Ⅱ",
+    "section": "⑯",
     "title": "短期滞在手術等基本料の見直し",
     "page": 228,
     "document_page": 216,
     "category": "medical",
     "type": "revised",
-    "id": 32
+    "parent_section": "Ⅰ－２",
+    "id": 33
   },
   {
-    "section": "Ⅱ",
+    "section": "⑰",
     "title": "地域加算の見直し",
     "page": 242,
     "document_page": 230,
     "category": "medical",
     "type": "revised",
-    "id": 33
+    "parent_section": "Ⅰ－２",
+    "id": 34
   },
   {
-    "section": "Ⅱ",
+    "section": "⑱",
     "title": "看護補助者に係る加算の名称の見直し",
     "page": 243,
     "document_page": 231,
     "category": "medical",
     "type": "revised",
-    "id": 34
-  },
-  {
-    "section": "Ⅱ",
-    "title": "Ⅱ－１－２ 人口の少ない地域の実情を踏まえた評価",
-    "page": 244,
-    "document_page": 232,
-    "category": "section_major",
-    "type": "section",
+    "parent_section": "Ⅰ－２",
     "id": 35
   },
   {
-    "section": "Ⅱ",
+    "section": "Ⅱ－１",
+    "title": "－２ 人口の少ない地域の実情を踏まえた評価",
+    "page": 244,
+    "document_page": 232,
+    "category": "section_middle",
+    "type": "section",
+    "parent_section": "Ⅱ",
+    "id": 36
+  },
+  {
+    "section": "Ⅱ－１",
+    "title": "患者の状態及び必要と考えられる医療機能に応じた入院医療の評価",
+    "document_page": 105,
+    "page": 117,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅱ",
+    "id": 37
+  },
+  {
+    "section": "①",
     "title": "医療資源の少ない地域の対象地域の見直し",
     "page": 244,
     "document_page": 232,
     "category": "medical",
     "type": "revised",
-    "id": 36
+    "parent_section": "Ⅱ－１",
+    "id": 38
   },
   {
-    "section": "",
+    "section": "③",
     "title": "歯科巡回診療に係る適切な推進",
     "page": 256,
     "document_page": 244,
     "category": "dental",
     "type": "revised",
-    "id": 37
+    "parent_section": "Ⅱ－１",
+    "id": 39
   },
   {
-    "section": "Ⅱ",
+    "section": "②",
     "title": "包括期入院医療における充実した後方支援の評価",
     "page": 262,
     "document_page": 250,
     "category": "medical",
     "type": "revised",
-    "id": 38
+    "parent_section": "Ⅱ－１",
+    "id": 40
   },
   {
-    "section": "Ⅱ",
+    "section": "③",
     "title": "地域包括ケア病棟における初期加算等の評価の見直し",
     "page": 264,
     "document_page": 252,
     "category": "medical",
     "type": "revised",
-    "id": 39
+    "parent_section": "Ⅱ－１",
+    "id": 41
   },
   {
-    "section": "Ⅱ",
-    "title": "Ⅱ－２－２ 円滑な入退院の実現",
+    "section": "Ⅱ－２",
+    "title": "－２ 円滑な入退院の実現",
     "page": 267,
     "document_page": 255,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 40
+    "parent_section": "Ⅱ",
+    "id": 42
   },
   {
-    "section": "Ⅱ",
+    "section": "Ⅱ－２",
+    "title": "「治し、支える医療」の実現",
+    "document_page": 246,
+    "page": 258,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅱ",
+    "id": 43
+  },
+  {
+    "section": "①",
     "title": "入退院支援加算等の見直し",
     "page": 267,
     "document_page": 255,
     "category": "medical",
     "type": "revised",
-    "id": 41
+    "parent_section": "Ⅱ－２",
+    "id": 44
   },
   {
-    "section": "Ⅱ",
+    "section": "②",
     "title": "介護支援等連携指導料の見直し",
     "page": 274,
     "document_page": 262,
     "category": "medical",
     "type": "revised",
-    "id": 42
+    "parent_section": "Ⅱ－２",
+    "id": 45
   },
   {
-    "section": "Ⅱ",
+    "section": "④",
     "title": "感染対策向上加算等における専従要件の見直し",
     "page": 279,
     "document_page": 267,
     "category": "medical",
     "type": "revised",
-    "id": 43
+    "parent_section": "Ⅱ－２",
+    "id": 46
   },
   {
-    "section": "Ⅱ",
+    "section": "②",
     "title": "質の高い摂食嚥下機能回復に係る取組の推進",
     "page": 290,
     "document_page": 278,
     "category": "medical",
     "type": "revised",
-    "id": 44
+    "parent_section": "Ⅱ－２",
+    "id": 47
   },
   {
-    "section": "Ⅱ",
+    "section": "④",
     "title": "入院患者の口腔管理における医科歯科連携の推進",
     "page": 293,
     "document_page": 281,
     "category": "dental",
     "type": "revised",
-    "id": 45
+    "parent_section": "Ⅱ－２",
+    "id": 48
   },
   {
-    "section": "Ⅱ",
+    "section": "①",
     "title": "機能強化加算の見直し",
     "page": 295,
     "document_page": 283,
     "category": "medical",
     "type": "revised",
-    "id": 46
+    "parent_section": "Ⅱ－２",
+    "id": 49
   },
   {
-    "section": "Ⅱ",
+    "section": "②",
     "title": "生活習慣病管理料（Ⅰ）及び（Ⅱ）の見直し",
     "page": 298,
     "document_page": 286,
     "category": "medical",
     "type": "revised",
-    "id": 47
+    "parent_section": "Ⅱ－２",
+    "id": 50
   },
   {
-    "section": "Ⅱ",
+    "section": "③",
     "title": "特定疾患療養管理料の見直し",
     "page": 303,
     "document_page": 291,
     "category": "medical",
     "type": "revised",
-    "id": 48
+    "parent_section": "Ⅱ－２",
+    "id": 51
   },
   {
-    "section": "Ⅱ",
+    "section": "④",
     "title": "地域包括診療加算等の見直し",
     "page": 305,
     "document_page": 293,
     "category": "medical",
     "type": "revised",
-    "id": 49
+    "parent_section": "Ⅱ－２",
+    "id": 52
   },
   {
-    "section": "Ⅱ",
+    "section": "⑤",
     "title": "時間外対応体制加算の充実",
     "page": 318,
     "document_page": 306,
     "category": "medical",
     "type": "revised",
-    "id": 50
+    "parent_section": "Ⅱ－２",
+    "id": 53
   },
   {
-    "section": "",
+    "section": "⑦",
     "title": "継続的・効果的な歯周病治療の推進",
     "page": 323,
     "document_page": 311,
     "category": "medical",
     "type": "revised",
-    "id": 51
+    "parent_section": "Ⅱ－２",
+    "id": 54
   },
   {
-    "section": "",
+    "section": "⑧",
     "title": "かかりつけ薬剤師の推進",
     "page": 326,
     "document_page": 314,
     "category": "pharmacy",
     "type": "revised",
-    "id": 52
+    "parent_section": "Ⅱ－２",
+    "id": 55
   },
   {
-    "section": "Ⅱ",
+    "section": "③",
     "title": "連携強化診療情報提供料の見直し",
     "page": 341,
     "document_page": 329,
     "category": "medical",
     "type": "revised",
-    "id": 53
+    "parent_section": "Ⅱ－２",
+    "id": 56
   },
   {
-    "section": "Ⅱ",
-    "title": "Ⅱ－５ 質の高い在宅医療・訪問看護の確保",
+    "section": "Ⅱ－５",
+    "title": "質の高い在宅医療・訪問看護の確保",
     "page": 349,
     "document_page": 337,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 54
+    "parent_section": "Ⅱ",
+    "id": 57
   },
   {
-    "section": "Ⅱ",
+    "section": "Ⅱ－５",
+    "title": "質の高い在宅医療・訪問看護の確保",
+    "document_page": 337,
+    "page": 349,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅱ",
+    "id": 58
+  },
+  {
+    "section": "①",
     "title": "適正な訪問看護の推進",
     "page": 349,
     "document_page": 337,
     "category": "nursing",
     "type": "revised",
-    "id": 55
+    "parent_section": "Ⅱ－５",
+    "id": 59
   },
   {
-    "section": "Ⅱ",
+    "section": "②",
     "title": "指定訪問看護の事業の人員及び運営に関する基準の見直し",
     "page": 352,
     "document_page": 340,
     "category": "nursing",
     "type": "revised",
-    "id": 56
+    "parent_section": "Ⅱ－５",
+    "id": 60
   },
   {
-    "section": "Ⅱ",
+    "section": "③",
     "title": "保険医療機関及び保険医療養担当規則の見直し",
     "page": 356,
     "document_page": 344,
     "category": "medical",
     "type": "revised",
-    "id": 57
+    "parent_section": "Ⅱ－５",
+    "id": 61
   },
   {
-    "section": "Ⅱ",
+    "section": "①",
     "title": "在宅緩和ケア充実診療所・病院加算の見直し",
     "page": 359,
     "document_page": 347,
     "category": "medical",
     "type": "revised",
-    "id": 58
+    "parent_section": "Ⅱ－５",
+    "id": 62
   },
   {
-    "section": "Ⅱ",
+    "section": "②",
     "title": "往診時医療情報連携加算の見直し",
     "page": 363,
     "document_page": 351,
     "category": "medical",
     "type": "revised",
-    "id": 59
+    "parent_section": "Ⅱ－５",
+    "id": 63
   },
   {
-    "section": "Ⅱ",
+    "section": "③",
     "title": "退院直後の 訪問栄養食事指導に関する評価の新設",
     "page": 365,
     "document_page": 353,
     "category": "medical",
     "type": "new",
-    "id": 60
+    "parent_section": "Ⅱ－５",
+    "id": 64
   },
   {
-    "section": "Ⅱ",
+    "section": "④",
     "title": "連携型機能強化型在宅療養支援診療所の見直し",
     "page": 367,
     "document_page": 355,
     "category": "medical",
     "type": "revised",
-    "id": 61
+    "parent_section": "Ⅱ－５",
+    "id": 65
   },
   {
-    "section": "Ⅱ",
+    "section": "⑤",
     "title": "在宅療養支援診療所・病院の見直し",
     "page": 373,
     "document_page": 361,
     "category": "medical",
     "type": "revised",
-    "id": 62
+    "parent_section": "Ⅱ－５",
+    "id": 66
   },
   {
-    "section": "Ⅱ",
+    "section": "⑥",
     "title": "在宅時医学総合管理料等及び在宅療養支援診療所等の見直し",
     "page": 374,
     "document_page": 362,
     "category": "medical",
     "type": "revised",
-    "id": 63
+    "parent_section": "Ⅱ－５",
+    "id": 67
   },
   {
-    "section": "Ⅱ",
+    "section": "⑦",
     "title": "在宅療養指導管理材料加算の算定要件の見直し",
     "page": 379,
     "document_page": 367,
     "category": "medical",
     "type": "revised",
-    "id": 64
+    "parent_section": "Ⅱ－５",
+    "id": 68
   },
   {
-    "section": "Ⅱ",
+    "section": "⑧",
     "title": "医師と薬剤師の同時訪問の推進",
     "page": 381,
     "document_page": 369,
     "category": "pharmacy",
     "type": "revised",
-    "id": 65
+    "parent_section": "Ⅱ－５",
+    "id": 69
   },
   {
-    "section": "Ⅱ",
+    "section": "⑨",
     "title": "残薬対策に係る地域包括診療料等の見直し",
     "page": 383,
     "document_page": 371,
     "category": "medical",
     "type": "revised",
-    "id": 66
+    "parent_section": "Ⅱ－５",
+    "id": 70
   },
   {
-    "section": "Ⅱ",
+    "section": "⑪",
     "title": "質の高い在宅歯科医療の提供の推進",
     "page": 389,
     "document_page": 377,
     "category": "dental",
     "type": "revised",
-    "id": 67
+    "parent_section": "Ⅱ－５",
+    "id": 71
   },
   {
-    "section": "Ⅱ",
+    "section": "⑫",
     "title": "在宅薬学総合体制加算の見直し",
     "page": 400,
     "document_page": 388,
     "category": "medical",
     "type": "revised",
-    "id": 68
+    "parent_section": "Ⅱ－５",
+    "id": 72
   },
   {
-    "section": "",
+    "section": "⑬",
     "title": "在宅患者訪問薬剤管理指導料の見直し",
     "page": 406,
     "document_page": 394,
     "category": "pharmacy",
     "type": "revised",
-    "id": 69
+    "parent_section": "Ⅱ－５",
+    "id": 73
   },
   {
-    "section": "Ⅱ",
+    "section": "①",
     "title": "過疎地域等に配慮した評価の見直し",
     "page": 409,
     "document_page": 397,
     "category": "medical",
     "type": "revised",
-    "id": 70
+    "parent_section": "Ⅱ－５",
+    "id": 74
   },
   {
-    "section": "Ⅱ",
+    "section": "③",
     "title": "訪問看護における ICT を用いた医療情報連携の推進",
     "page": 412,
     "document_page": 400,
     "category": "nursing",
     "type": "revised",
-    "id": 71
+    "parent_section": "Ⅱ－５",
+    "id": 75
   },
   {
-    "section": "Ⅱ",
+    "section": "⑤",
     "title": "乳幼児加算の評価の見直し",
     "page": 416,
     "document_page": 404,
     "category": "medical",
     "type": "revised",
-    "id": 72
+    "parent_section": "Ⅱ－５",
+    "id": 76
   },
   {
-    "section": "Ⅱ",
+    "section": "⑥",
     "title": "訪問看護管理療養費の見直し",
     "page": 417,
     "document_page": 405,
     "category": "nursing",
     "type": "revised",
-    "id": 73
+    "parent_section": "Ⅱ－５",
+    "id": 77
   },
   {
-    "section": "Ⅱ",
+    "section": "⑦",
     "title": "同一建物に居住する利用者への訪問看護の評価の見直し",
     "page": 420,
     "document_page": 408,
     "category": "nursing",
     "type": "revised",
-    "id": 74
+    "parent_section": "Ⅱ－５",
+    "id": 78
   },
   {
-    "section": "Ⅱ",
+    "section": "⑧",
     "title": "包括型訪問看護療養費の新設",
     "page": 430,
     "document_page": 418,
     "category": "nursing",
     "type": "new",
-    "id": 75
+    "parent_section": "Ⅱ－５",
+    "id": 79
   },
   {
-    "section": "Ⅱ",
-    "title": "Ⅱ－６ 人口・医療資源の少ない地域への支援",
+    "section": "Ⅱ－６",
+    "title": "人口・医療資源の少ない地域への支援",
     "page": 434,
     "document_page": 422,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 76
+    "parent_section": "Ⅱ",
+    "id": 80
   },
   {
-    "section": "Ⅱ",
+    "section": "Ⅱ－６",
+    "title": "人口・医療資源の少ない地域への支援",
+    "document_page": 422,
+    "page": 434,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅱ",
+    "id": 81
+  },
+  {
+    "section": "①",
     "title": "医療資源の少ない地域の対象地域の見直し",
     "page": 434,
     "document_page": 422,
     "category": "medical",
     "type": "revised",
-    "id": 77
+    "parent_section": "Ⅱ－６",
+    "id": 82
   },
   {
-    "section": "Ⅱ",
+    "section": "④",
     "title": "歯科巡回診療に係る適切な推進",
     "page": 437,
     "document_page": 425,
     "category": "dental",
     "type": "revised",
-    "id": 78
+    "parent_section": "Ⅱ－６",
+    "id": 83
   },
   {
-    "section": "Ⅱ",
-    "title": "Ⅱ－８ 医師の地域偏在対策の推進",
+    "section": "Ⅱ－８",
+    "title": "医師の地域偏在対策の推進",
     "page": 440,
     "document_page": 428,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 79
+    "parent_section": "Ⅱ",
+    "id": 84
   },
   {
-    "section": "Ⅱ",
+    "section": "Ⅱ－８",
+    "title": "医師の地域偏在対策の推進",
+    "document_page": 428,
+    "page": 440,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅱ",
+    "id": 85
+  },
+  {
+    "section": "①",
     "title": "医療資源の少ない地域の対象地域の見直し",
     "page": 440,
     "document_page": 428,
     "category": "medical",
     "type": "revised",
-    "id": 80
+    "parent_section": "Ⅱ－８",
+    "id": 86
   },
   {
-    "section": "",
+    "section": "③",
     "title": "外来医師過多区域に関する対応",
     "page": 442,
     "document_page": 430,
     "category": "medical",
     "type": "revised",
-    "id": 81
+    "parent_section": "Ⅱ－８",
+    "id": 87
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "療養・就労両立支援指導料の見直し",
     "page": 444,
     "document_page": 432,
     "category": "medical",
     "type": "revised",
-    "id": 82
+    "parent_section": "Ⅱ－８",
+    "id": 88
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "健康診断等の受診後における初再診料等の算定方法の明確化",
     "page": 447,
     "document_page": 435,
     "category": "medical",
     "type": "revised",
-    "id": 83
+    "parent_section": "Ⅱ－８",
+    "id": 89
   },
   {
-    "section": "Ⅲ",
+    "section": "③",
     "title": "手術等の医療技術の適切な評価",
     "page": 450,
     "document_page": 438,
     "category": "medical",
     "type": "revised",
-    "id": 84
+    "parent_section": "Ⅱ－８",
+    "id": 90
   },
   {
-    "section": "Ⅲ",
+    "section": "④",
     "title": "高度急性期病院におけるロボット手術の評価の新設",
     "page": 454,
     "document_page": 442,
     "category": "medical",
     "type": "new",
-    "id": 85
+    "parent_section": "Ⅱ－８",
+    "id": 91
   },
   {
-    "section": "Ⅲ",
+    "section": "⑤",
     "title": "全身麻酔の評価の見直し",
     "page": 456,
     "document_page": 444,
     "category": "medical",
     "type": "revised",
-    "id": 86
+    "parent_section": "Ⅱ－８",
+    "id": 92
   },
   {
-    "section": "Ⅲ",
+    "section": "⑥",
     "title": "遺伝性疾患に係る療養指導に対する評価の見直し",
     "page": 460,
     "document_page": 448,
     "category": "medical",
     "type": "revised",
-    "id": 87
+    "parent_section": "Ⅱ－８",
+    "id": 93
   },
   {
-    "section": "Ⅲ",
+    "section": "⑦",
     "title": "遺伝学的検査の見直し",
     "page": 465,
     "document_page": 453,
     "category": "medical",
     "type": "revised",
-    "id": 88
+    "parent_section": "Ⅱ－８",
+    "id": 94
   },
   {
-    "section": "Ⅲ",
+    "section": "⑧",
     "title": "迅速なフィブリノゲン測定に係る評価の新設",
     "page": 471,
     "document_page": 459,
     "category": "medical",
     "type": "new",
-    "id": 89
+    "parent_section": "Ⅱ－８",
+    "id": 95
   },
   {
-    "section": "Ⅲ",
+    "section": "⑨",
     "title": "質の高い臨床検査の適切な評価",
     "page": 472,
     "document_page": 460,
     "category": "medical",
     "type": "revised",
-    "id": 90
+    "parent_section": "Ⅱ－８",
+    "id": 96
   },
   {
-    "section": "Ⅲ",
+    "section": "⑩",
     "title": "骨塩定量検査の算定要件の見直し",
     "page": 473,
     "document_page": 461,
     "category": "medical",
     "type": "revised",
-    "id": 91
+    "parent_section": "Ⅱ－８",
+    "id": 97
   },
   {
-    "section": "Ⅲ",
+    "section": "⑪",
     "title": "近視進行抑制薬の処方に係る検査の見直し",
     "page": 475,
     "document_page": 463,
     "category": "medical",
     "type": "revised",
-    "id": 92
+    "parent_section": "Ⅱ－８",
+    "id": 98
   },
   {
-    "section": "Ⅲ",
+    "section": "⑫",
     "title": "検体検査管理加算の見直し",
     "page": 476,
     "document_page": 464,
     "category": "medical",
     "type": "revised",
-    "id": 93
+    "parent_section": "Ⅱ－８",
+    "id": 99
   },
   {
-    "section": "Ⅲ",
+    "section": "⑬",
     "title": "カルタヘナ法に基づく医学管理の推進",
     "page": 478,
     "document_page": 466,
     "category": "medical",
     "type": "revised",
-    "id": 94
+    "parent_section": "Ⅱ－８",
+    "id": 100
   },
   {
-    "section": "Ⅲ",
+    "section": "⑭",
     "title": "慢性心不全の再入院予防の評価の新設",
     "page": 480,
     "document_page": 468,
     "category": "medical",
     "type": "new",
-    "id": 95
+    "parent_section": "Ⅱ－８",
+    "id": 101
   },
   {
-    "section": "Ⅲ",
+    "section": "⑮",
     "title": "人工腎臓の評価の見直し",
     "page": 483,
     "document_page": 471,
     "category": "medical",
     "type": "revised",
-    "id": 96
+    "parent_section": "Ⅱ－８",
+    "id": 102
   },
   {
-    "section": "Ⅲ",
+    "section": "⑯",
     "title": "経皮的シャント拡張術・血栓除去術の適正化",
     "page": 487,
     "document_page": 475,
     "category": "medical",
     "type": "revised",
-    "id": 97
+    "parent_section": "Ⅱ－８",
+    "id": 103
   },
   {
-    "section": "Ⅲ",
+    "section": "⑰",
     "title": "医療機関間連携による腹膜透析管理の推進",
     "page": 489,
     "document_page": 477,
     "category": "medical",
     "type": "revised",
-    "id": 98
+    "parent_section": "Ⅱ－８",
+    "id": 104
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－１－１ 身体的拘束の最小化の推進",
+    "section": "Ⅲ－１",
+    "title": "－１ 身体的拘束の最小化の推進",
     "page": 491,
     "document_page": 479,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 99
+    "parent_section": "Ⅲ",
+    "id": 105
   },
   {
-    "section": "Ⅲ",
+    "section": "Ⅲ－１",
+    "title": "患者にとって安心・安全に医療を受けられるための体制の評価",
+    "document_page": 348,
+    "page": 360,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅲ",
+    "id": 106
+  },
+  {
+    "section": "①",
     "title": "身体的拘束最小化の取組の更なる推進",
     "page": 491,
     "document_page": 479,
     "category": "medical",
     "type": "revised",
-    "id": 100
+    "parent_section": "Ⅲ－１",
+    "id": 107
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "認知症ケア加算の見直し",
     "page": 499,
     "document_page": 487,
     "category": "medical",
     "type": "revised",
-    "id": 101
+    "parent_section": "Ⅲ－１",
+    "id": 108
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－１－２ 医療安全対策の推進",
+    "section": "Ⅲ－１",
+    "title": "－２ 医療安全対策の推進",
     "page": 500,
     "document_page": 488,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 102
+    "parent_section": "Ⅲ",
+    "id": 109
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "医療安全対策加算の見直し",
     "page": 500,
     "document_page": 488,
     "category": "medical",
     "type": "revised",
-    "id": 103
+    "parent_section": "Ⅲ－１",
+    "id": 110
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－２ アウトカムにも着目した評価の推進",
+    "section": "Ⅲ－２",
+    "title": "アウトカムにも着目した評価の推進",
     "page": 501,
     "document_page": 489,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 104
+    "parent_section": "Ⅲ",
+    "id": 111
   },
   {
-    "section": "Ⅲ",
+    "section": "Ⅲ－２",
+    "title": "アウトカムにも着目した評価の推進",
+    "document_page": 489,
+    "page": 501,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅲ",
+    "id": 112
+  },
+  {
+    "section": "②",
     "title": "入院基本料等における各種基準の計算方法の明確化",
     "page": 508,
     "document_page": 496,
     "category": "medical",
     "type": "revised",
-    "id": 105
+    "parent_section": "Ⅲ－２",
+    "id": 113
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－２－１ アウトカムにも着目した評価の推進",
+    "section": "Ⅲ－２",
+    "title": "－１ アウトカムにも着目した評価の推進",
     "page": 513,
     "document_page": 501,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 106
+    "parent_section": "Ⅲ",
+    "id": 114
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "データ提出加算の届出を要件とする入院料の見直し",
     "page": 513,
     "document_page": 501,
     "category": "medical",
     "type": "revised",
-    "id": 107
+    "parent_section": "Ⅲ－２",
+    "id": 115
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "診療実績データの提出に係る評価の見直し",
     "page": 516,
     "document_page": 504,
     "category": "medical",
     "type": "revised",
-    "id": 108
+    "parent_section": "Ⅲ－２",
+    "id": 116
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "医療 DX 推進体制整備加算等の見直し",
     "page": 522,
     "document_page": 510,
     "category": "medical",
     "type": "revised",
-    "id": 109
+    "parent_section": "Ⅲ－２",
+    "id": 117
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "オンライン診療の適正な推進に係る評価の見直し",
     "page": 533,
     "document_page": 521,
     "category": "medical",
     "type": "revised",
-    "id": 110
+    "parent_section": "Ⅲ－２",
+    "id": 118
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "オンライン診療における電子処方箋の活用の推進",
     "page": 535,
     "document_page": 523,
     "category": "medical",
     "type": "revised",
-    "id": 111
+    "parent_section": "Ⅲ－２",
+    "id": 119
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "オンライン診療の適正な推進に係る評価の見直し",
     "page": 537,
     "document_page": 525,
     "category": "medical",
     "type": "revised",
-    "id": 112
+    "parent_section": "Ⅲ－２",
+    "id": 120
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "D to P with N のオンライン診療の評価の明確化",
     "page": 538,
     "document_page": 526,
     "category": "medical",
     "type": "revised",
-    "id": 113
+    "parent_section": "Ⅲ－２",
+    "id": 121
   },
   {
-    "section": "Ⅲ",
+    "section": "③",
     "title": "遠隔連携診療料の評価の拡大",
     "page": 544,
     "document_page": 532,
     "category": "medical",
     "type": "revised",
-    "id": 114
+    "parent_section": "Ⅲ－２",
+    "id": 122
   },
   {
-    "section": "Ⅲ",
+    "section": "④",
     "title": "オンライン診療の適正な推進に係る評価の見直し",
     "page": 551,
     "document_page": 539,
     "category": "medical",
     "type": "revised",
-    "id": 115
+    "parent_section": "Ⅲ－２",
+    "id": 123
   },
   {
-    "section": "Ⅲ",
+    "section": "⑤",
     "title": "オンライン診療における電子処方箋の活用の推進",
     "page": 552,
     "document_page": 540,
     "category": "medical",
     "type": "revised",
-    "id": 116
+    "parent_section": "Ⅲ－２",
+    "id": 124
   },
   {
-    "section": "Ⅲ",
+    "section": "⑥",
     "title": "情報通信機器等を用いた外来栄養食事指導料の見直し",
     "page": 553,
     "document_page": 541,
     "category": "medical",
     "type": "revised",
-    "id": 117
+    "parent_section": "Ⅲ－２",
+    "id": 125
   },
   {
-    "section": "Ⅲ",
+    "section": "⑦",
     "title": "情報通信機器を用いた医学管理等の評価の新設",
     "page": 557,
     "document_page": 545,
     "category": "medical",
     "type": "new",
-    "id": 118
+    "parent_section": "Ⅲ－２",
+    "id": 126
   },
   {
-    "section": "Ⅲ",
+    "section": "⑧",
     "title": "情報通信機器を用いた療養指導の見直し",
     "page": 559,
     "document_page": 547,
     "category": "medical",
     "type": "revised",
-    "id": 119
+    "parent_section": "Ⅲ－２",
+    "id": 127
   },
   {
-    "section": "Ⅲ",
+    "section": "⑨",
     "title": "情報通信機器を用いた医学管理等の評価の新設",
     "page": 561,
     "document_page": 549,
     "category": "medical",
     "type": "new",
-    "id": 120
+    "parent_section": "Ⅲ－２",
+    "id": 128
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－４ 質の高いリハビリテーションの推進",
+    "section": "Ⅲ－４",
+    "title": "質の高いリハビリテーションの推進",
     "page": 562,
     "document_page": 550,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 121
+    "parent_section": "Ⅲ",
+    "id": 129
   },
   {
-    "section": "Ⅲ",
+    "section": "Ⅲ－４",
+    "title": "質の高いリハビリテーションの推進",
+    "document_page": 550,
+    "page": 562,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅲ",
+    "id": 130
+  },
+  {
+    "section": "①",
     "title": "退院時リハビリテーション指導料の算定要件の見直し",
     "page": 562,
     "document_page": 550,
     "category": "medical",
     "type": "revised",
-    "id": 122
+    "parent_section": "Ⅲ－４",
+    "id": 131
   },
   {
-    "section": "Ⅲ",
+    "section": "⑤",
     "title": "リハビリテーション総合実施計画評価料の見直し",
     "page": 570,
     "document_page": 558,
     "category": "medical",
     "type": "revised",
-    "id": 123
+    "parent_section": "Ⅲ－４",
+    "id": 132
   },
   {
-    "section": "",
+    "section": "⑥",
     "title": "リンパ浮腫複合的治療料の評価の見直し",
     "page": 572,
     "document_page": 560,
     "category": "medical",
     "type": "revised",
-    "id": 124
+    "parent_section": "Ⅲ－４",
+    "id": 133
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－４－１ 発症早期からのリハビリテーション介入の推進",
+    "section": "Ⅲ－４",
+    "title": "－１ 発症早期からのリハビリテーション介入の推進",
     "page": 573,
     "document_page": 561,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 125
+    "parent_section": "Ⅲ",
+    "id": 134
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－４－２ 土日祝日のリハビリテーション実施体制の充実",
+    "section": "Ⅲ－４",
+    "title": "－２ 土日祝日のリハビリテーション実施体制の充実",
     "page": 576,
     "document_page": 564,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 126
+    "parent_section": "Ⅲ",
+    "id": 135
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－５－１ 救急医療の充実",
+    "section": "Ⅲ－５",
+    "title": "－１ 救急医療の充実",
     "page": 577,
     "document_page": 565,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 127
+    "parent_section": "Ⅲ",
+    "id": 136
   },
   {
-    "section": "Ⅲ",
+    "section": "Ⅲ－５",
+    "title": "救急医療の充実",
+    "document_page": 481,
+    "page": 493,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅲ",
+    "id": 137
+  },
+  {
+    "section": "①",
     "title": "救急外来医療に係る評価の再編",
     "page": 577,
     "document_page": 565,
     "category": "medical",
     "type": "revised",
-    "id": 128
+    "parent_section": "Ⅲ－５",
+    "id": 138
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "救急患者連携搬送料の見直し",
     "page": 595,
     "document_page": 583,
     "category": "medical",
     "type": "revised",
-    "id": 129
+    "parent_section": "Ⅲ－５",
+    "id": 139
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－５－２ 小児・周産期医療の充実",
+    "section": "Ⅲ－５",
+    "title": "－２ 小児・周産期医療の充実",
     "page": 599,
     "document_page": 587,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 130
+    "parent_section": "Ⅲ",
+    "id": 140
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "母体・胎児集中治療室管理料の見直し",
     "page": 599,
     "document_page": 587,
     "category": "medical",
     "type": "revised",
-    "id": 131
+    "parent_section": "Ⅲ－５",
+    "id": 141
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "新生児特定集中治療室管理料の見直し",
     "page": 603,
     "document_page": 591,
     "category": "medical",
     "type": "revised",
-    "id": 132
+    "parent_section": "Ⅲ－５",
+    "id": 142
   },
   {
-    "section": "Ⅲ",
+    "section": "③",
     "title": "小児の成人移行期医療に係る受入の推進",
     "page": 604,
     "document_page": 592,
     "category": "medical",
     "type": "revised",
-    "id": 133
+    "parent_section": "Ⅲ－５",
+    "id": 143
   },
   {
-    "section": "Ⅲ",
+    "section": "④",
     "title": "小児医療に係る高額な検査・薬剤への対応",
     "page": 606,
     "document_page": 594,
     "category": "pharmacy",
     "type": "revised",
-    "id": 134
+    "parent_section": "Ⅲ－５",
+    "id": 144
   },
   {
-    "section": "Ⅲ",
+    "section": "⑤",
     "title": "産科管理加算の新設",
     "page": 608,
     "document_page": 596,
     "category": "medical",
     "type": "new",
-    "id": 135
+    "parent_section": "Ⅲ－５",
+    "id": 145
   },
   {
-    "section": "Ⅲ",
+    "section": "⑥",
     "title": "療養病棟入院基本料の見直し",
     "page": 609,
     "document_page": 597,
     "category": "medical",
     "type": "revised",
-    "id": 136
+    "parent_section": "Ⅲ－５",
+    "id": 146
   },
   {
-    "section": "Ⅲ",
+    "section": "⑦",
     "title": "無菌製剤処理加算の見直し",
     "page": 610,
     "document_page": 598,
     "category": "medical",
     "type": "revised",
-    "id": 137
+    "parent_section": "Ⅲ－５",
+    "id": 147
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－５－３ 質の高いがん医療及び緩和ケアの評価",
+    "section": "Ⅲ－５",
+    "title": "－３ 質の高いがん医療及び緩和ケアの評価",
     "page": 611,
     "document_page": 599,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 138
+    "parent_section": "Ⅲ",
+    "id": 148
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "外来腫瘍化学療法診療料の見直し",
     "page": 611,
     "document_page": 599,
     "category": "medical",
     "type": "revised",
-    "id": 139
+    "parent_section": "Ⅲ－５",
+    "id": 149
   },
   {
-    "section": "Ⅲ",
+    "section": "③",
     "title": "人口減少地域におけるＩＭＲＴの施設基準の見直し",
     "page": 618,
     "document_page": 606,
     "category": "medical",
     "type": "revised",
-    "id": 140
+    "parent_section": "Ⅲ－５",
+    "id": 150
   },
   {
-    "section": "Ⅲ",
+    "section": "④",
     "title": "がん患者指導管理料の見直し",
     "page": 623,
     "document_page": 611,
     "category": "medical",
     "type": "revised",
-    "id": 141
+    "parent_section": "Ⅲ－５",
+    "id": 151
   },
   {
-    "section": "Ⅲ",
+    "section": "⑤",
     "title": "遺伝性乳癌卵巣癌症候群に係る評価の見直し",
     "page": 625,
     "document_page": 613,
     "category": "medical",
     "type": "revised",
-    "id": 142
+    "parent_section": "Ⅲ－５",
+    "id": 152
   },
   {
-    "section": "Ⅲ",
+    "section": "⑥",
     "title": "閉鎖式接続器具を用いた抗がん剤投与時の評価の新設",
     "page": 627,
     "document_page": 615,
     "category": "medical",
     "type": "new",
-    "id": 143
+    "parent_section": "Ⅲ－５",
+    "id": 153
   },
   {
-    "section": "Ⅲ",
+    "section": "⑦",
     "title": "非がん患者に対する緩和ケアの評価の見直し",
     "page": 628,
     "document_page": 616,
     "category": "medical",
     "type": "revised",
-    "id": 144
+    "parent_section": "Ⅲ－５",
+    "id": 154
   },
   {
-    "section": "Ⅲ",
+    "section": "⑧",
     "title": "療養病棟入院基本料の見直し",
     "page": 635,
     "document_page": 623,
     "category": "medical",
     "type": "revised",
-    "id": 145
+    "parent_section": "Ⅲ－５",
+    "id": 155
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－５－４ 質の高い精神医療の評価",
+    "section": "Ⅲ－５",
+    "title": "－４ 質の高い精神医療の評価",
     "page": 636,
     "document_page": 624,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 146
+    "parent_section": "Ⅲ",
+    "id": 156
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "精神病床における多職種協働の推進",
     "page": 636,
     "document_page": 624,
     "category": "medical",
     "type": "revised",
-    "id": 147
+    "parent_section": "Ⅲ－５",
+    "id": 157
   },
   {
-    "section": "",
+    "section": "③",
     "title": "精神科リエゾンチーム加算の見直し",
     "page": 645,
     "document_page": 633,
     "category": "medical",
     "type": "revised",
-    "id": 148
+    "parent_section": "Ⅲ－５",
+    "id": 158
   },
   {
-    "section": "",
+    "section": "④",
     "title": "精神科慢性身体合併症管理加算の新設",
     "page": 647,
     "document_page": 635,
     "category": "medical",
     "type": "new",
-    "id": 149
+    "parent_section": "Ⅲ－５",
+    "id": 159
   },
   {
-    "section": "",
+    "section": "⑤",
     "title": "精神疾患の特定入院料における包括範囲の見直し",
     "page": 648,
     "document_page": 636,
     "category": "medical",
     "type": "revised",
-    "id": 150
+    "parent_section": "Ⅲ－５",
+    "id": 160
   },
   {
-    "section": "",
+    "section": "⑥",
     "title": "精神科救急医療体制加算の見直し",
     "page": 650,
     "document_page": 638,
     "category": "medical",
     "type": "revised",
-    "id": 151
+    "parent_section": "Ⅲ－５",
+    "id": 161
   },
   {
-    "section": "",
+    "section": "⑧",
     "title": "精神科救急急性期医療入院料等の見直し",
     "page": 654,
     "document_page": 642,
     "category": "medical",
     "type": "revised",
-    "id": 152
+    "parent_section": "Ⅲ－５",
+    "id": 162
   },
   {
-    "section": "",
+    "section": "⑨",
     "title": "精神病棟入院基本料の見直し",
     "page": 657,
     "document_page": 645,
     "category": "medical",
     "type": "revised",
-    "id": 153
+    "parent_section": "Ⅲ－５",
+    "id": 163
   },
   {
-    "section": "",
+    "section": "⑩",
     "title": "精神科急性期医師配置加算の見直し",
     "page": 658,
     "document_page": 646,
     "category": "medical",
     "type": "revised",
-    "id": 154
+    "parent_section": "Ⅲ－５",
+    "id": 164
   },
   {
-    "section": "",
+    "section": "⑪",
     "title": "通院・在宅精神療法の見直し",
     "page": 661,
     "document_page": 649,
     "category": "medical",
     "type": "revised",
-    "id": 155
+    "parent_section": "Ⅲ－５",
+    "id": 165
   },
   {
-    "section": "",
+    "section": "⑫",
     "title": "精神保健福祉士の病棟の専従要件の見直し",
     "page": 663,
     "document_page": 651,
     "category": "medical",
     "type": "revised",
-    "id": 156
+    "parent_section": "Ⅲ－５",
+    "id": 166
   },
   {
-    "section": "",
+    "section": "⑬",
     "title": "心理支援加算の見直し",
     "page": 665,
     "document_page": 653,
     "category": "medical",
     "type": "revised",
-    "id": 157
+    "parent_section": "Ⅲ－５",
+    "id": 167
   },
   {
-    "section": "",
+    "section": "⑭",
     "title": "認知療法・認知行動療法の見直し",
     "page": 667,
     "document_page": 655,
     "category": "medical",
     "type": "revised",
-    "id": 158
+    "parent_section": "Ⅲ－５",
+    "id": 168
   },
   {
-    "section": "",
+    "section": "⑮",
     "title": "臨床心理技術者に係る経過措置の見直し",
     "page": 673,
     "document_page": 661,
     "category": "medical",
     "type": "revised",
-    "id": 159
+    "parent_section": "Ⅲ－５",
+    "id": 169
   },
   {
-    "section": "",
+    "section": "⑯",
     "title": "児童思春期支援指導加算の見直し",
     "page": 675,
     "document_page": 663,
     "category": "medical",
     "type": "revised",
-    "id": 160
+    "parent_section": "Ⅲ－５",
+    "id": 170
   },
   {
-    "section": "",
+    "section": "⑰",
     "title": "早期診療体制充実加算の見直し",
     "page": 679,
     "document_page": 667,
     "category": "medical",
     "type": "revised",
-    "id": 161
+    "parent_section": "Ⅲ－５",
+    "id": 171
   },
   {
-    "section": "",
+    "section": "⑱",
     "title": "情報通信機器を用いた精神療法の見直し",
     "page": 681,
     "document_page": 669,
     "category": "medical",
     "type": "revised",
-    "id": 162
+    "parent_section": "Ⅲ－５",
+    "id": 172
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－５－５ 難病患者等に対する適切な医療の評価",
+    "section": "Ⅲ－５",
+    "title": "－５ 難病患者等に対する適切な医療の評価",
     "page": 683,
     "document_page": 671,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 163
+    "parent_section": "Ⅲ",
+    "id": 173
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "脳死臓器提供管理料の見直し",
     "page": 683,
     "document_page": 671,
     "category": "medical",
     "type": "revised",
-    "id": 164
+    "parent_section": "Ⅲ－５",
+    "id": 174
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "臓器移植手術に係る評価の新設",
     "page": 685,
     "document_page": 673,
     "category": "medical",
     "type": "new",
-    "id": 165
+    "parent_section": "Ⅲ－５",
+    "id": 175
   },
   {
-    "section": "Ⅲ",
+    "section": "③",
     "title": "臍帯血移植の見直し",
     "page": 686,
     "document_page": 674,
     "category": "medical",
     "type": "revised",
-    "id": 166
+    "parent_section": "Ⅲ－５",
+    "id": 176
   },
   {
-    "section": "Ⅲ",
+    "section": "④",
     "title": "抗 HLA 抗体検査の算定要件の見直し",
     "page": 687,
     "document_page": 675,
     "category": "medical",
     "type": "revised",
-    "id": 167
+    "parent_section": "Ⅲ－５",
+    "id": 177
   },
   {
-    "section": "Ⅲ",
-    "title": "Ⅲ－６ 感染症対策や薬剤耐性対策の推進",
+    "section": "Ⅲ－６",
+    "title": "感染症対策や薬剤耐性対策の推進",
     "page": 688,
     "document_page": 676,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 168
+    "parent_section": "Ⅲ",
+    "id": 178
   },
   {
-    "section": "Ⅲ",
+    "section": "Ⅲ－６",
+    "title": "感染症対策や薬剤耐性対策の推進",
+    "document_page": 676,
+    "page": 688,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅲ",
+    "id": 179
+  },
+  {
+    "section": "①",
     "title": "感染症に係る検査の見直し",
     "page": 688,
     "document_page": 676,
     "category": "medical",
     "type": "revised",
-    "id": 169
+    "parent_section": "Ⅲ－６",
+    "id": 180
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "感染対策向上加算の見直し",
     "page": 692,
     "document_page": 680,
     "category": "medical",
     "type": "revised",
-    "id": 170
+    "parent_section": "Ⅲ－６",
+    "id": 181
   },
   {
-    "section": "Ⅲ",
+    "section": "③",
     "title": "結核に係る入院医療提供体制の確保",
     "page": 694,
     "document_page": 682,
     "category": "medical",
     "type": "revised",
-    "id": 171
+    "parent_section": "Ⅲ－６",
+    "id": 182
   },
   {
-    "section": "",
+    "section": "①",
     "title": "障害者歯科治療における歯科医学的管理の新たな評価",
     "page": 702,
     "document_page": 690,
     "category": "dental",
     "type": "revised",
-    "id": 172
+    "parent_section": "Ⅲ－６",
+    "id": 183
   },
   {
-    "section": "",
+    "section": "③",
     "title": "有床義歯管理の評価体系の見直し",
     "page": 705,
     "document_page": 693,
     "category": "medical",
     "type": "revised",
-    "id": 173
+    "parent_section": "Ⅲ－６",
+    "id": 184
   },
   {
-    "section": "",
+    "section": "④",
     "title": "継続的・効果的な歯周病治療の推進",
     "page": 707,
     "document_page": 695,
     "category": "medical",
     "type": "revised",
-    "id": 174
+    "parent_section": "Ⅲ－６",
+    "id": 185
   },
   {
-    "section": "",
+    "section": "⑤",
     "title": "小児の咬合機能獲得に向けた対応の充実",
     "page": 708,
     "document_page": 696,
     "category": "medical",
     "type": "revised",
-    "id": 175
+    "parent_section": "Ⅲ－６",
+    "id": 186
   },
   {
-    "section": "",
+    "section": "⑥",
     "title": "歯科矯正に係る患者の対象等の見直し",
     "page": 711,
     "document_page": 699,
     "category": "dental",
     "type": "revised",
-    "id": 176
+    "parent_section": "Ⅲ－６",
+    "id": 187
   },
   {
-    "section": "",
+    "section": "⑦",
     "title": "周術期及び回復期等の口腔機能管理の推進",
     "page": 715,
     "document_page": 703,
     "category": "medical",
     "type": "revised",
-    "id": 177
+    "parent_section": "Ⅲ－６",
+    "id": 188
   },
   {
-    "section": "",
+    "section": "⑧",
     "title": "歯科衛生士による口腔機能に関する実地指導の推進",
     "page": 718,
     "document_page": 706,
     "category": "dental",
     "type": "revised",
-    "id": 178
+    "parent_section": "Ⅲ－６",
+    "id": 189
   },
   {
-    "section": "",
+    "section": "⑨",
     "title": "歯科医師と歯科技工士の連携の推進",
     "page": 720,
     "document_page": 708,
     "category": "dental",
     "type": "revised",
-    "id": 179
+    "parent_section": "Ⅲ－６",
+    "id": 190
   },
   {
-    "section": "",
+    "section": "⑩",
     "title": "歯科治療のデジタル化等の推進",
     "page": 728,
     "document_page": 716,
     "category": "dental",
     "type": "revised",
-    "id": 180
+    "parent_section": "Ⅲ－６",
+    "id": 191
   },
   {
-    "section": "",
+    "section": "⑪",
     "title": "有床義歯の新たな製作法に係る評価の新設",
     "page": 735,
     "document_page": 723,
     "category": "medical",
     "type": "new",
-    "id": 181
+    "parent_section": "Ⅲ－６",
+    "id": 192
   },
   {
-    "section": "",
+    "section": "⑫",
     "title": "歯科診療の実態に応じた評価の見直し・明確化",
     "page": 736,
     "document_page": 724,
     "category": "dental",
     "type": "revised",
-    "id": 182
+    "parent_section": "Ⅲ－６",
+    "id": 193
   },
   {
-    "section": "",
+    "section": "⑬",
     "title": "歯科固有の技術の評価の見直し",
     "page": 749,
     "document_page": 737,
     "category": "dental",
     "type": "revised",
-    "id": 183
+    "parent_section": "Ⅲ－６",
+    "id": 194
   },
   {
-    "section": "Ⅲ",
+    "section": "①",
     "title": "調剤基本料の見直し",
     "page": 754,
     "document_page": 742,
     "category": "pharmacy",
     "type": "revised",
-    "id": 184
+    "parent_section": "Ⅲ－６",
+    "id": 195
   },
   {
-    "section": "Ⅲ",
+    "section": "②",
     "title": "特別調剤基本料Ａの見直し",
     "page": 763,
     "document_page": 751,
     "category": "pharmacy",
     "type": "revised",
-    "id": 185
+    "parent_section": "Ⅲ－６",
+    "id": 196
   },
   {
-    "section": "Ⅲ",
+    "section": "③",
     "title": "地域支援体制加算の見直し",
     "page": 766,
     "document_page": 754,
     "category": "medical",
     "type": "revised",
-    "id": 186
+    "parent_section": "Ⅲ－６",
+    "id": 197
   },
   {
-    "section": "Ⅲ",
+    "section": "④",
     "title": "調剤管理料の見直し",
     "page": 769,
     "document_page": 757,
     "category": "pharmacy",
     "type": "revised",
-    "id": 187
+    "parent_section": "Ⅲ－６",
+    "id": 198
   },
   {
-    "section": "Ⅲ",
+    "section": "⑤",
     "title": "重複投薬・相互作用等防止加算等の見直し",
     "page": 771,
     "document_page": 759,
     "category": "medical",
     "type": "revised",
-    "id": 188
+    "parent_section": "Ⅲ－６",
+    "id": 199
   },
   {
-    "section": "Ⅲ",
+    "section": "⑥",
     "title": "かかりつけ薬剤師の推進",
     "page": 775,
     "document_page": 763,
     "category": "pharmacy",
     "type": "revised",
-    "id": 189
+    "parent_section": "Ⅲ－６",
+    "id": 200
   },
   {
-    "section": "Ⅲ",
+    "section": "⑦",
     "title": "吸入薬管理指導加算の見直し",
     "page": 776,
     "document_page": 764,
     "category": "medical",
     "type": "revised",
-    "id": 190
+    "parent_section": "Ⅲ－６",
+    "id": 201
   },
   {
-    "section": "Ⅲ",
+    "section": "⑧",
     "title": "服用薬剤調整支援料の見直し",
     "page": 777,
     "document_page": 765,
     "category": "pharmacy",
     "type": "revised",
-    "id": 191
+    "parent_section": "Ⅲ－６",
+    "id": 202
   },
   {
-    "section": "Ⅲ",
+    "section": "⑨",
     "title": "調剤報酬体系の簡素化に向けた見直し",
     "page": 779,
     "document_page": 767,
     "category": "pharmacy",
     "type": "revised",
-    "id": 192
+    "parent_section": "Ⅲ－６",
+    "id": 203
   },
   {
-    "section": "Ⅳ",
-    "title": "Ⅳ－１ 後発医薬品・バイオ後続品の使用促進",
+    "section": "Ⅳ－１",
+    "title": "後発医薬品・バイオ後続品の使用促進",
     "page": 788,
     "document_page": 776,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 193
+    "parent_section": "Ⅳ",
+    "id": 204
   },
   {
-    "section": "",
+    "section": "Ⅳ－１",
+    "title": "後発医薬品・バイオ後続品の使用促進",
+    "document_page": 776,
+    "page": 788,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅳ",
+    "id": 205
+  },
+  {
+    "section": "①",
     "title": "処方箋料の見直し",
     "page": 788,
     "document_page": 776,
     "category": "medical",
     "type": "revised",
-    "id": 194
+    "parent_section": "Ⅳ－１",
+    "id": 206
   },
   {
-    "section": "",
+    "section": "②",
     "title": "バイオ後続品使用体制加算の見直し",
     "page": 791,
     "document_page": 779,
     "category": "medical",
     "type": "revised",
-    "id": 195
+    "parent_section": "Ⅳ－１",
+    "id": 207
   },
   {
-    "section": "",
+    "section": "③",
     "title": "医薬品の安定供給に資する体制に係る評価の新設",
     "page": 796,
     "document_page": 784,
     "category": "medical",
     "type": "new",
-    "id": 196
+    "parent_section": "Ⅳ－１",
+    "id": 208
   },
   {
-    "section": "",
+    "section": "⑤",
     "title": "バイオ後続品使用促進に係る薬局体制整備の推進",
     "page": 805,
     "document_page": 793,
     "category": "pharmacy",
     "type": "revised",
-    "id": 197
+    "parent_section": "Ⅳ－１",
+    "id": 209
   },
   {
-    "section": "",
+    "section": "⑥",
     "title": "長期収載品の選定療養の更なる活用",
     "page": 812,
     "document_page": 800,
     "category": "medical",
     "type": "revised",
-    "id": 198
+    "parent_section": "Ⅳ－１",
+    "id": 210
   },
   {
-    "section": "Ⅳ",
-    "title": "Ⅳ－３－１ 市場実勢価格を踏まえた適正な評価",
+    "section": "Ⅳ－３",
+    "title": "－１ 市場実勢価格を踏まえた適正な評価",
     "page": 814,
     "document_page": 802,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 199
+    "parent_section": "Ⅳ",
+    "id": 211
   },
   {
-    "section": "Ⅳ",
+    "section": "Ⅳ－３",
+    "title": "医薬品の適正使用の推進",
+    "document_page": 632,
+    "page": 644,
+    "type": "section",
+    "category": "section_middle",
+    "parent_section": "Ⅳ",
+    "id": 212
+  },
+  {
+    "section": "①",
     "title": "実勢価格等を踏まえた検体検査等の評価の適正化",
     "page": 814,
     "document_page": 802,
     "category": "medical",
     "type": "revised",
-    "id": 200
+    "parent_section": "Ⅳ－３",
+    "id": 213
   },
   {
-    "section": "Ⅳ",
+    "section": "①",
     "title": "薬剤総合評価調整加算の見直し",
     "page": 815,
     "document_page": 803,
     "category": "pharmacy",
     "type": "revised",
-    "id": 201
+    "parent_section": "Ⅳ－３",
+    "id": 214
   },
   {
-    "section": "Ⅳ",
+    "section": "②",
     "title": "オンライン診療の適正な推進に係る評価の見直し",
     "page": 817,
     "document_page": 805,
     "category": "medical",
     "type": "revised",
-    "id": 202
+    "parent_section": "Ⅳ－３",
+    "id": 215
   },
   {
-    "section": "Ⅳ",
+    "section": "③",
     "title": "オンライン診療における電子処方箋の活用の推進",
     "page": 818,
     "document_page": 806,
     "category": "medical",
     "type": "revised",
-    "id": 203
+    "parent_section": "Ⅳ－３",
+    "id": 216
   },
   {
-    "section": "Ⅳ",
+    "section": "④",
     "title": "残薬対策の推進に向けた処方箋様式の見直し",
     "page": 819,
     "document_page": 807,
     "category": "medical",
     "type": "revised",
-    "id": 204
+    "parent_section": "Ⅳ－３",
+    "id": 217
   },
   {
-    "section": "Ⅳ",
+    "section": "①",
     "title": "薬剤総合評価調整加算の見直し",
     "page": 822,
     "document_page": 810,
     "category": "pharmacy",
     "type": "revised",
-    "id": 205
+    "parent_section": "Ⅳ－３",
+    "id": 218
   },
   {
-    "section": "Ⅳ",
+    "section": "②",
     "title": "病棟薬剤業務実施加算の評価の見直し",
     "page": 823,
     "document_page": 811,
     "category": "pharmacy",
     "type": "revised",
-    "id": 206
+    "parent_section": "Ⅳ－３",
+    "id": 219
   },
   {
-    "section": "Ⅳ",
+    "section": "③",
     "title": "医師と薬剤師の同時訪問の推進",
     "page": 826,
     "document_page": 814,
     "category": "pharmacy",
     "type": "revised",
-    "id": 207
+    "parent_section": "Ⅳ－３",
+    "id": 220
   },
   {
-    "section": "Ⅳ",
-    "title": "Ⅳ－４－３ 医学的妥当性や経済性の視点も踏まえた処方の推進",
+    "section": "Ⅳ－４",
+    "title": "－３ 医学的妥当性や経済性の視点も踏まえた処方の推進",
     "page": 827,
     "document_page": 815,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 208
+    "parent_section": "Ⅳ",
+    "id": 221
   },
   {
-    "section": "Ⅳ",
+    "section": "①",
     "title": "栄養保持を目的とした医薬品の保険給付の適正化",
     "page": 827,
     "document_page": 815,
     "category": "medical",
     "type": "revised",
-    "id": 209
+    "parent_section": "Ⅳ－４",
+    "id": 222
   },
   {
-    "section": "Ⅳ",
-    "title": "Ⅳ－５ 外来医療の機能分化と連携",
+    "section": "Ⅳ－５",
+    "title": "外来医療の機能分化と連携",
     "page": 830,
     "document_page": 818,
-    "category": "section_major",
+    "category": "section_middle",
     "type": "section",
-    "id": 210
+    "parent_section": "Ⅳ",
+    "id": 223
   }
 ];
 
         let revisionItems = [];
         let currentCategory = 'all';
         let currentType = null;
+        let currentMajorSection = 'all';
         let searchTerm = '';
         let selectedItem = null;
         let currentPdfUrl = '';
@@ -2490,6 +2826,7 @@
             
             updateStats();
             updateCounts();
+            updateMajorSections();
             renderItems();
             attachEventListeners();
         }
@@ -2541,7 +2878,51 @@
             document.getElementById('count-deleted').textContent = contentItems.filter(i => i.type === 'deleted').length;
         }
 
-        // アイテムを表示
+
+        // 大項目フィルターを更新
+        function updateMajorSections() {
+            const majorFilter = document.getElementById('majorSectionFilter');
+            const contentItems = revisionItems.filter(i => i.type !== 'section');
+            
+            const majorSections = [
+                {"section": "Ⅰ", "title": "現下の雇用情勢も踏まえた人材確保・働き方改革等の推進"},
+                {"section": "Ⅱ", "title": "2040年頃を見据えた医療機関の機能の分化・連携と地域における医療の確保、地域包括ケアシステムの推進"},
+                {"section": "Ⅲ", "title": "安心・安全で質の高い医療の推進"},
+                {"section": "Ⅳ", "title": "効率化・適正化を通じた医療保険制度の安定性・持続可能性の向上"}
+            ];
+            
+            let html = '<button class="filter-btn active" data-major="all"><span>すべて</span><span class="filter-count">' + contentItems.length + '</span></button>';
+            
+            majorSections.forEach(section => {
+                const sectionCode = section.section;
+                const sectionTitle = section.title;
+                const count = revisionItems.filter(item => {
+                    if (item.type === 'section') return false;
+                    const parentSection = item.parent_section || '';
+                    return parentSection.startsWith(sectionCode);
+                }).length;
+                
+                html += '<button class="filter-btn" data-major="' + sectionCode + '" style="display: flex; flex-direction: column; align-items: flex-start; padding: 0.75rem 1rem; text-align: left;">';
+                html += '<div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 0.3rem;">';
+                html += '<span style="font-weight: 700; color: #0066CC; font-family: IBM Plex Mono, monospace; font-size: 1.1rem;">' + sectionCode + '</span>';
+                html += '<span class="filter-count">' + count + '</span></div>';
+                html += '<div style="font-size: 0.85rem; font-weight: 400; line-height: 1.4; color: #5A6C7D; white-space: normal;">' + sectionTitle + '</div>';
+                html += '</button>';
+            });
+            
+            majorFilter.innerHTML = html;
+            
+            document.querySelectorAll('#majorSectionFilter .filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#majorSectionFilter .filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMajorSection = this.dataset.major;
+                    renderItems();
+                });
+            });
+        }
+
+                // アイテムを表示
         function renderItems() {
             const filteredItems = revisionItems.filter(item => {
                 const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
@@ -2549,7 +2930,13 @@
                 const matchesSearch = !searchTerm || 
                     item.title.toLowerCase().includes(searchTerm.toLowerCase());
                 
-                return matchesCategory && matchesType && matchesSearch;
+                let matchesMajorSection = true;
+                if (currentMajorSection !== 'all') {
+                    const parentSection = item.parent_section || '';
+                    matchesMajorSection = parentSection.startsWith(currentMajorSection);
+                }
+                
+                return matchesCategory && matchesType && matchesSearch && matchesMajorSection;
             });
 
             const itemsList = document.getElementById('itemsList');
@@ -2662,15 +3049,6 @@
             document.getElementById('searchBox').addEventListener('input', function(e) {
                 searchTerm = e.target.value;
                 renderItems();
-            });
-
-            // 新しいタブで開く
-            document.getElementById('openNewTab')?.addEventListener('click', () => {
-                if (currentPdfUrl) {
-                    window.open(currentPdfUrl, '_blank');
-                } else {
-                    alert('項目を選択してください');
-                }
             });
         }
 
